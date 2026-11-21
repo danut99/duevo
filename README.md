@@ -120,3 +120,17 @@ ITP opens an external Google Maps search. Users may enter a city; the app does n
 Checklists are contextual summaries, not universal requirements. CEI varies by records already available; passport guidance covers adults resident in Romania; CASCO depends on the contract. Full source links remain available. Recheck these sources before changing the recorded review date. No map API keys, paid APIs or new dependencies were added.
 
 Browser check: `node scripts/check-renewal-help.cjs` against the local Vite server on port 5186. Uses an isolated rendering fixture and creates no live documents or users.
+
+## Separate wallets in one account
+
+Apply `supabase/migrations/202611210003_wallet_profiles.sql`. Existing documents are assigned to the account's default “Eu” profile. New accounts receive it on first load. In the account/avatar menu users can create, switch and rename profiles; Auto/Personal lists, counters, exports and new document creation use the active profile. All profiles belong to the same signed-in account and are not independent logins or shared permissions. The last selected profile is remembered per account on that browser; direct document links select their owning profile. Existing documents cannot be silently reassigned to another profile.
+
+Push subscriptions and reminder defaults remain device/account preferences. All account profiles can generate notifications. To include the profile name in notification messages deploy the updated sender:
+
+```sh
+npx supabase functions deploy push --remote=gibbjvdwugvoldcpttfd --use-api --no-verify-jwt --yes
+```
+
+The current CLI session returned 403 for this deployment; the existing sender was not replaced. Do not claim named profile push messages until deployment succeeds. Names are intentionally included by this feature and may appear on the lock screen; document titles and reference numbers remain omitted.
+
+`node scripts/check-wallet-profiles.mjs` checks the actual migration with an isolated PostgreSQL-compatible database, including backfill, RLS, composite ownership FK, immutable document membership, default provisioning and repeat application. `node scripts/check-profile-ui.cjs` checks the browser flow with isolated API fixtures against port 5174, without creating live accounts or records.

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs",
+    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs && node scripts/check-wallet-profiles.mjs",
     "test:browser": "node scripts/check-functionalities.cjs",
     "push:keys": "node scripts/generate-push-config.mjs"
   },

@@ -1,24 +1,25 @@
-﻿{
+{
   "id": "/",
-  "name": "Expiry Pocket",
-  "short_name": "Pocket",
-  "start_url": "/",
+  "name": "Duevo",
+  "short_name": "Duevo",
+  "start_url": "/documents",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f5f7fa",
-  "theme_color": "#163d36",
+  "background_color": "#0c0d0f",
+  "theme_color": "#0c0d0f",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon-192.png?v=duevo-1",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512.png?v=duevo-1",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }
   ]
 }
+

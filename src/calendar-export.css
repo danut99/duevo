@@ -1,0 +1,18 @@
+﻿.pocket-app .ep-calendar-card{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 16px;grid-column:1/-1;min-width:0;border:var(--ep-border-width) solid var(--ep-border);border-radius:15px;background:var(--ep-card);box-shadow:var(--ep-shadow)}
+.ep-calendar-card-icon{display:grid;place-items:center;width:34px;height:34px;border:1px solid #ff5d1f40;background:#ff5d1f12;color:#ff986e;border-radius:10px}
+.ep-calendar-card-copy{min-width:0}
+.pocket-app .ep-calendar-card h2{font-size:14px;line-height:1.4;font-weight:650;letter-spacing:-.2px;margin:0 0 3px}
+.pocket-app .ep-calendar-card-copy>p{font-size:12px;line-height:1.5;color:var(--ep-sub);margin:0}
+.pocket-app .ep-calendar-card>.ep-calendar-export{display:grid;gap:0;margin:0;padding:0;border:0;min-width:0}
+.pocket-app .ep-calendar-card .ep-secondary{min-height:40px;font-size:13px;padding:8px 13px;white-space:nowrap}
+.pocket-app .ep-calendar-card .ep-calendar-export>p{font-size:11px;line-height:1.5;color:var(--ep-sub);margin:8px 0 0;max-width:185px}
+.pocket-app[data-theme=carbon] .ep-calendar-card-icon{border:2px solid #0a0a0a;background:#fff1e9;color:#a8320b;box-shadow:1px 1px 0 #0a0a0a}
+@media(max-width:599px){
+ .pocket-app .ep-calendar-card{padding:12px;gap:10px;grid-template-columns:30px minmax(0,1fr) auto}
+ .ep-calendar-card-icon{width:30px;height:32px}
+ .pocket-app .ep-calendar-card h2{font-size:13px}
+ .pocket-app .ep-calendar-card-copy>p{font-size:11px}
+ .pocket-app .ep-calendar-card .ep-secondary{padding:9px 11px;min-height:44px;font-size:12px}
+ .pocket-app .ep-calendar-card .ep-calendar-export>p{max-width:100px}
+}
+

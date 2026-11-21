@@ -1,0 +1,93 @@
+﻿.ep-workspace .ep-overview{display:grid;gap:32px;padding:4px 0 36px;min-width:0}
+.ov-heading{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.ep-overview .ov-eyebrow{font:600 10px/1.5 'JetBrains Mono',monospace;letter-spacing:1.6px;color:var(--ep-sub);margin:0 0 12px}
+.ep-overview .ov-heading h1{font-size:clamp(28px,3vw,40px);font-weight:750;line-height:1.2;letter-spacing:-1.4px;margin-bottom:14px}
+.ov-heading h1 span{color:var(--ep-accent)}
+.ep-overview .ov-heading>div>p:last-child{font-size:15px;line-height:1.7;color:var(--ep-sub)}
+.ov-date{display:flex;align-items:center;gap:9px;font-size:14px;white-space:nowrap;color:var(--ep-sub);background:var(--ep-inner);border:var(--ep-border-width) solid var(--ep-border);padding:11px 15px;border-radius:12px}
+.ep-overview .ep-card{border:var(--ep-border-width) solid var(--ep-border);border-radius:20px;background:var(--ep-card);box-shadow:var(--ep-shadow);min-width:0}
+.ov-outlook{display:flex;align-items:center;gap:20px;padding:26px}
+.ov-symbol{display:grid;place-items:center;width:54px;height:54px;flex:none;border-radius:16px;background:#ff5d1f16;color:#ff8557;border:1px solid #ff5d1f40}
+.ov-outlook.all-clear .ov-symbol,.ov-symbol.connected{background:#10b98115;border-color:#10b98140;color:#52cda3}
+.ov-outlook-copy{flex:1;min-width:0}
+.ep-overview .ov-outlook h2,.ep-overview .ov-first h2{font-size:22px;line-height:1.35;letter-spacing:-.5px;font-weight:700;margin-bottom:8px}
+.ep-overview .ov-outlook p:last-child{font-size:14px;line-height:1.7;color:var(--ep-sub)}
+.ep-overview .ov-outlook .ov-eyebrow{margin-bottom:7px}
+.ep-overview .ep-secondary,.ep-overview .ep-primary{font-size:13px;min-height:44px;padding:10px 15px;gap:8px;white-space:normal}
+.ov-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--ep-border);padding:0 0 28px}
+.ov-summary>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 26px;border-right:1px solid var(--ep-border)}
+.ov-summary>div:first-child{padding-left:0}.ov-summary>div:last-child{border:0;padding-right:0}
+.ov-summary>div>span{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ep-sub)}.ov-summary strong{font-size:28px;line-height:1.4;font-weight:650;letter-spacing:-1px}
+.ov-summary>div:first-child svg{color:#f88a91}.ov-summary>div:nth-child(2) svg{color:#ffad75}.ov-summary>div:last-child svg{color:#65cfa6}
+.ov-columns{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px}
+.ov-section-title{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;min-height:52px}.ov-section-title h2{font-size:20px;font-weight:650;line-height:1.4;letter-spacing:-.5px}.ov-section-title .ov-eyebrow{margin-bottom:5px}.ov-section-title>svg{color:var(--ep-sub)}
+.ov-count{display:grid;place-items:center;min-width:28px;height:28px;font-size:12px;background:var(--ep-inner);border:1px solid var(--ep-border);border-radius:9px;color:var(--ep-sub)}
+.ov-action-list{padding:0 20px;min-height:290px}
+.ov-action{display:flex;align-items:center;gap:14px;padding:22px 0;border-bottom:1px solid var(--ep-border)}
+.ov-action:last-child{border-bottom:0}.ov-document-icon{display:grid;place-items:center;flex:none;width:44px;height:44px;background:var(--ep-inner);border:1px solid var(--ep-border);border-radius:12px;color:var(--ep-sub)}
+.ov-action>div{flex:1;min-width:0}.ov-action h3{font-size:15px;font-weight:650;line-height:1.5;overflow-wrap:anywhere;margin-bottom:4px}
+.ov-timing{font-size:12px;line-height:1.5;color:var(--ep-sub);display:inline-block}.ov-timing.overdue{color:#ff9da6}.ov-timing.near{color:#ffb67f}
+.ov-link{display:flex;align-items:center;gap:4px;font-size:12px;line-height:1.7;background:none;color:#ff986e;padding:7px 0 0;text-align:left}
+.ov-link:hover{text-decoration:underline;text-underline-offset:3px}
+.ep-overview .ov-action .ep-icon-button{width:36px;height:36px}
+.ov-list-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;min-height:48px;width:100%;padding:16px 0;background:none;color:var(--ep-text);border-top:1px solid var(--ep-border)}
+.ov-caught-up{min-height:288px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 18px;gap:12px}.ov-caught-up>svg{color:#65cfa6}.ov-caught-up h3{font-size:17px;font-weight:650}.ov-caught-up p{font-size:14px;color:var(--ep-sub);line-height:1.8;max-width:300px}
+.ov-next-card{padding:24px;min-height:290px}
+.ov-next-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.ov-next-top>.ov-document-icon{color:#ff986e;background:#ff5d1f12;border-color:#ff5d1f30}
+.ov-next-card h3{font-size:23px;line-height:1.35;font-weight:700;letter-spacing:-.6px;overflow-wrap:anywhere}.ov-next-card>p{font-size:13px;color:var(--ep-sub);margin:7px 0 20px;overflow-wrap:anywhere}
+.ov-next-date{border-top:1px solid var(--ep-border);padding:16px 0 22px}.ov-next-date small{display:block;font:500 10px/1.5 'JetBrains Mono',monospace;letter-spacing:1px;color:var(--ep-sub);margin-bottom:7px}.ov-next-date time{font-size:18px;font-weight:600;line-height:1.5}
+.ov-next-card>.ep-primary{width:100%}.ov-next-card>.ov-caught-up{padding:0;min-height:240px}
+.ov-calendar-card{padding:0 22px}.ov-calendar-row{display:flex;align-items:center;gap:18px;width:100%;background:none;color:var(--ep-text);text-align:left;padding:18px 0;border-bottom:1px solid var(--ep-border)}.ov-calendar-row:last-child{border:0}
+.ov-calendar-row:hover .ov-calendar-name>strong{color:var(--ep-accent)}
+.ov-calendar-day{display:grid;place-items:center;flex:none;width:48px;min-height:54px;padding:6px;border:1px solid var(--ep-border);border-radius:11px;background:var(--ep-inner)}
+.ov-calendar-day>strong{font-size:21px;font-weight:700;line-height:1.1}.ov-calendar-day small{font-size:11px;text-transform:uppercase;color:var(--ep-sub);margin-top:3px}
+.ov-calendar-name{flex:1;min-width:0}.ov-calendar-name strong{font-size:14px;font-weight:600;display:block;overflow-wrap:anywhere}.ov-calendar-name small{font-size:12px;display:block;margin-top:4px;color:var(--ep-sub);overflow-wrap:anywhere}.ov-calendar-row>svg{color:var(--ep-sub);flex:none}
+.ov-calendar-clear{display:flex;align-items:center;gap:12px;padding:26px 0;color:var(--ep-sub)}.ov-calendar-clear>svg{color:#65cfa6}.ov-calendar-clear p{font-size:14px;line-height:1.7}
+.ov-notifications{display:flex;align-items:center;gap:18px;padding:24px}.ov-notifications>div{flex:1;min-width:0}.ov-notifications h2{font-size:18px;font-weight:650;line-height:1.4;margin-bottom:6px}.ov-notifications p:last-child{font-size:13px;line-height:1.8;color:var(--ep-sub)}.ov-notifications .ov-eyebrow{margin-bottom:6px;font-size:9px}
+.ov-footnote{display:flex;justify-content:center;align-items:center;gap:7px;color:var(--ep-sub);font-size:11px;line-height:1.7;text-align:center}
+.ov-loading{display:flex;align-items:center;justify-content:center;gap:14px;min-height:250px;color:var(--ep-sub);font-size:14px}
+.ov-empty{padding:40px;text-align:center}.ov-empty h2{font-size:22px;margin:14px 0}.ov-empty p{font-size:14px;color:var(--ep-sub)}
+.ov-first{display:flex;align-items:flex-start;gap:22px;padding:36px}.ov-first>div{max-width:540px}.ov-first p:not(.ov-eyebrow){font-size:15px;line-height:1.8;color:var(--ep-sub);margin-bottom:24px}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-symbol{border:2px solid var(--ep-border);box-shadow:2px 2px 0 #0a0a0a;color:#a8320b;background:#fff1e9}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-outlook.all-clear .ov-symbol,.pocket-app.ep-workspace[data-theme=carbon] .ov-symbol.connected{background:#eaf8f0;color:#087c55}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ov-timing.overdue){color:#a82c3b}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ov-timing.near,.ov-link){color:#a8320b}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ov-document-icon,.ov-calendar-day,.ov-count){border:2px solid #0a0a0a}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-summary svg{color:#52525b}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-date{border:2px solid #0a0a0a;background:#fff}
+@media(max-width:999px){
+ .ep-workspace .ep-overview{gap:26px}
+ .ov-columns{grid-template-columns:minmax(0,1fr);gap:26px}
+ .ov-action-list,.ov-next-card{min-height:0}
+ .ov-caught-up{min-height:200px}.ov-next-card>.ov-caught-up{min-height:190px}
+ .ov-outlook,.ov-notifications{flex-wrap:wrap;padding:22px}
+ .ov-outlook-copy{flex-basis:calc(100% - 80px)}
+ .ov-outlook>.ep-secondary{margin-left:74px}
+ .ov-notifications>div{flex-basis:calc(100% - 80px)}
+ .ov-notifications>.ep-secondary{margin-left:72px}
+ .ov-heading{align-items:flex-start}.ov-date{font-size:12px;padding:8px 10px}
+ .ov-summary>div{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:0 16px}
+ .ov-summary>div>span{font-size:12px;gap:6px}.ov-summary>div>span svg{width:14px}
+}
+@media(max-width:599px){
+ .ep-workspace .ep-overview{padding-top:8px;gap:28px}
+ .ov-heading{flex-direction:column;gap:16px}.ep-overview .ov-heading h1{font-size:32px;letter-spacing:-1px}.ep-overview .ov-heading>div>p:last-child{font-size:14px}
+ .ov-date{background:none;border:0!important;padding:0}
+ .ov-outlook{padding:20px;gap:14px}.ov-symbol{width:44px;height:44px;border-radius:13px}
+ .ep-overview .ov-outlook h2{font-size:20px}.ep-overview .ov-outlook p:last-child{font-size:13px}
+ .ep-overview .ov-eyebrow{font-size:9px;letter-spacing:1.2px}
+ .ov-outlook>.ep-secondary{width:100%;margin:4px 0 0}
+ .ov-summary{padding-bottom:24px}.ov-summary>div{padding:0 10px}.ov-summary>div>span{display:grid;font-size:11px;gap:7px}.ov-summary strong{font-size:26px}
+ .ov-section-title h2{font-size:20px}.ov-action-list{padding:0 16px}
+ .ov-action{gap:10px;padding:20px 0}.ov-action>.ov-document-icon{width:36px;height:40px}.ov-action h3{font-size:14px}.ov-action .ov-link{font-size:12px}
+ .ov-next-card{padding:22px}.ov-next-card h3{font-size:23px}
+ .ov-calendar-card{padding:0 16px}.ov-calendar-row{gap:12px;flex-wrap:wrap;position:relative;padding:17px 24px 17px 0}
+ .ov-calendar-row>.ov-timing{margin:-5px 0 0 60px}.ov-calendar-row>svg{position:absolute;right:0;top:28px}
+ .ov-calendar-name{flex-basis:calc(100% - 60px)}.ov-calendar-name strong{font-size:14px}
+ .ov-notifications{padding:20px;gap:14px}.ov-notifications h2{font-size:18px}.ov-notifications>.ep-secondary{width:100%;margin:4px 0 0}
+ .ov-footnote{font-size:11px;align-items:flex-start}.ov-footnote svg{margin-top:3px;flex:none}
+ .ov-first{padding:24px;flex-direction:column}.ov-first .ep-primary{width:100%}
+ .ov-loading{padding:24px;flex-direction:column;text-align:center}
+}
+

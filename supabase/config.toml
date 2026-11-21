@@ -1,0 +1,4 @@
+﻿project_id = "expiry-pocket"
+[functions.push]
+# JWT is verified explicitly using auth.getUser(); cron uses a distinct secret.
+verify_jwt = false

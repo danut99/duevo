@@ -1,0 +1,57 @@
+﻿/* Carbon light theme: shared component rules for every route.
+   Text links and the transparent hit target around the theme switch stay unboxed. */
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon]{
+ --ep-ink:#0a0a0a;--ep-control-shadow:2px 2px 0 var(--ep-ink);
+ --ep-shadow:3px 3px 0 var(--ep-ink);--ep-border:var(--ep-ink);--ep-border-width:2px;
+}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all){
+ border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow);color:var(--ep-ink);
+}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-secondary,.ep-pill,.ep-icon-button){background:#fff}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] .ep-primary{background:#ff5d1f;font-weight:800}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] .ep-danger{background:#fff0f0;color:#9f2029}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-pill[aria-pressed=true],.ep-pill[aria-checked=true],.ep-mark-all){background:#ff5d1f;color:var(--ep-ink)}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all):hover:not(:disabled){box-shadow:var(--ep-control-shadow);border-color:var(--ep-ink);filter:brightness(.97)}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all):active:not(:disabled){transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ep-ink)}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all):disabled{opacity:.5;filter:none;cursor:not-allowed}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-account-header .ep-bell{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow);color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-account-popover{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-shadow)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-account-popover button{background:#f4f4f6;border:2px solid var(--ep-ink);border-radius:10px;box-shadow:var(--ep-control-shadow);padding:10px;margin-top:12px;width:100%;color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-reminder-chips button,.ep-category-toggle button,.ep-steps button){
+ background:#fff;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)
+}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-reminder-chips button[aria-checked=true],.ep-category-toggle button[aria-pressed=true],.ep-steps button[aria-current=step]){
+ background:#ff5d1f;color:var(--ep-ink);border-color:var(--ep-ink);box-shadow:var(--ep-control-shadow)
+}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-reminder-chips{padding:2px 3px 5px 0}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-category-toggle{gap:10px}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-steps button>span{background:#f4f4f6;color:var(--ep-ink);border:1px solid var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-type[aria-pressed=true]{background:#fff1e9;border-color:var(--ep-ink);box-shadow:3px 3px 0 #ff5d1f}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-type[aria-pressed=true] .ep-type-icon,.ep-selected-type .ep-type-icon){background:#ff5d1f;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:none}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-alert-filters{gap:8px;padding-bottom:5px}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-alert-filters button>span,.ep-filter-tabs button>span){background:#fff;color:var(--ep-ink);border:1px solid var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-channel{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow);color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-channel[aria-checked=true]{background:#fff1e9}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-toggle{background:#e4e4e7;border:1px solid var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-toggle.on{background:#ff5d1f}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-toggle b{background:#fff;border:1px solid var(--ep-ink);box-shadow:none}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-form-card input,.ep-form-card select,.ep-form-card textarea,.ep-hour select){background:#fff;color:var(--ep-ink);border:2px solid var(--ep-ink);color-scheme:light}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-spec-grid>div,.ep-renewal-checklist label){background:#f4f4f6;border:2px solid var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-folder-pocket{border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-folder-auto .ep-folder-back{border-color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-folder-selected-label{border-color:var(--ep-ink);box-shadow:1px 1px 0 var(--ep-ink);color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] :is(.ep-text-button,.ep-section-heading button){color:#a8320b}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-bottom-nav a[aria-current=page]{background:#ff5d1f;color:var(--ep-ink);outline:2px solid var(--ep-ink);outline-offset:-2px}
+@media(max-width:999px){.pocket-app.ep-workspace[data-theme=carbon] .ep-bottom-nav{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-shadow)}}
+.pocket-app.ep-auth[data-theme=carbon] .auth-shell{background:#fff;color:var(--ep-ink)}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card{background:#fff;border:2px solid var(--ep-ink);box-shadow:4px 4px 0 var(--ep-ink)}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card :is(h1,.brand){color:var(--ep-ink)}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card :is(p,label,.text-button,.brand small){color:#52525b}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card :is(input,.google-signin){background:#fff;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card .primary{background:#ff5d1f;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)}
+.pocket-app.ep-auth[data-theme=carbon] .auth-divider span{background:#fff;color:#52525b}
+.pocket-app.ep-auth[data-theme=carbon] .auth-divider:before,.pocket-app.ep-auth[data-theme=carbon] .auth-divider:after{background:#d4d4d8}
+.pocket-app.ep-auth[data-theme=carbon] .auth-card .brandmark{background:#fff1e9;border:2px solid var(--ep-ink);color:#b63e13;box-shadow:var(--ep-control-shadow)}
+.pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #c83b0b;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.pocket-app[data-theme=carbon] :is(button,a){transition:none}}
+

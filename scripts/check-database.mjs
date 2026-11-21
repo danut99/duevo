@@ -1,0 +1,55 @@
+﻿import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {PGlite} from '@electric-sql/pglite';
+const db=new PGlite();
+const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+try{
+await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon,service_role;create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);alter table storage.objects enable row level security;create function storage.foldername(text) returns text[] language sql immutable as $$select string_to_array($1,'/')$$;insert into auth.users values('${a}'),('${b}');`);
+await db.exec(readFileSync('supabase/schema.sql','utf8').replace(/^\uFEFF/,''));
+await db.exec(readFileSync('supabase/migrations/202611210002_document_issued_date.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/202611210002_document_issued_date.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/202611210001_reminders_and_renewals.sql','utf8').replace(/^\uFEFF/,''));
+await db.exec('grant all on public.documents to service_role;');
+const asUser=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')};
+await asUser(a);
+let doc=(await db.query(`insert into public.documents(user_id,name,category,expires,issued_on,days,reminder_days) values($1,'RCA','Vehicles',current_date+7,current_date,30,array[30,7,1]) returning *`,[a])).rows[0];
+assert.equal(doc.version,1);
+assert((await db.query('select issued_on from public.documents where id=$1',[doc.id])).rows[0].issued_on);
+await asUser(b);assert.equal((await db.query('select * from public.documents')).rows.length,0);
+await assert.rejects(()=>db.query('select public.renew_document($1,current_date+365,1)',[doc.id]));
+await assert.rejects(()=>db.query('select * from public.claim_push_deliveries(10)'));
+await asUser(a);
+await db.query(`update public.documents set name='RCA nou' where id=$1`,[doc.id]);
+await assert.rejects(()=>db.query('select public.renew_document($1,current_date+365,1)',[doc.id]));
+await db.query('select public.renew_document($1,current_date+365,2)',[doc.id]);
+assert.equal((await db.query('select * from public.document_revisions')).rows.length,1);
+assert.equal((await db.query('select version from public.documents')).rows[0].version,3);
+await assert.rejects(()=>db.query('select public.renew_document($1,current_date,3)',[doc.id]));
+await assert.rejects(()=>db.query('update public.documents set reminder_days=array[2] where id=$1',[doc.id]));
+await assert.rejects(()=>db.query('insert into public.document_revisions(document_id,user_id,name,expires,reminder_days) values($1,$2,$3,current_date,array[30])',[doc.id,a,'Fake']));
+// Queue fixture: a reminder due today for one user's enabled device, after their preferred hour.
+await db.query(`update public.documents set expires=current_date+7,reminder_days=array[7,1] where id=$1`,[doc.id]);
+const sub=(await db.query(`insert into public.push_subscriptions(user_id,endpoint,p256dh,auth,timezone,hour) values($1,'https://fcm.googleapis.com/fcm/send/test',$2,$3,'UTC',0) returning id`,[a,'A'.repeat(87),'B'.repeat(22)])).rows[0];
+await assert.rejects(()=>db.query(`insert into public.push_subscriptions(user_id,endpoint,p256dh,auth) values($1,'https://127.0.0.1/private',$2,$3)`,[a,'A'.repeat(87),'B'.repeat(22)]));
+await assert.rejects(()=>db.query('update public.push_subscriptions set timezone=$1 where id=$2',['Not/AZone',sub.id]));
+await asUser(b);assert.equal((await db.query('select * from public.push_subscriptions')).rows.length,0);assert.equal((await db.query('select * from public.document_revisions')).rows.length,0);
+await db.exec('reset role;set role service_role');
+const jobs=(await db.query('select * from public.claim_push_deliveries(10)')).rows;
+assert.equal(jobs.length,1);assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
+await db.query('select public.finish_push_delivery($1,$2,503)',[jobs[0].delivery_id,jobs[0].claim_token]);
+assert.equal((await db.query('select status from public.push_deliveries')).rows[0].status,'pending');
+await db.query(`update public.push_deliveries set next_attempt=now()-interval '1 minute'`);
+const retry=(await db.query('select * from public.claim_push_deliveries(10)')).rows[0];assert.notEqual(retry.claim_token,jobs[0].claim_token);
+await db.query('select public.finish_push_delivery($1,$2,201)',[retry.delivery_id,jobs[0].claim_token]);assert.equal((await db.query('select status from public.push_deliveries')).rows[0].status,'sending');
+await db.query('select public.finish_push_delivery($1,$2,201)',[retry.delivery_id,retry.claim_token]);assert.equal((await db.query('select status from public.push_deliveries')).rows[0].status,'accepted');
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
+await asUser(a);const reminderVersion=(await db.query('select reminder_version from public.documents')).rows[0].reminder_version;
+await db.query('update public.documents set notes=$1 where id=$2',['Updated note',doc.id]);
+assert.equal((await db.query('select reminder_version from public.documents')).rows[0].reminder_version,reminderVersion);
+await db.exec('reset role;set role service_role');assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
+await asUser(a);await db.query('select public.renew_document($1,current_date+7,$2)',[doc.id,0]).catch(()=>{});
+assert.equal((await db.query('select * from public.push_deliveries')).rows.length,1);
+await asUser(b);assert.equal((await db.query('select * from public.push_deliveries')).rows.length,0);
+console.log('PASS: additive migration; account isolation; renewal history and stale-write protection; reminder validation; push endpoint/timezone checks; queue deduplication, leases, retries and accepted delivery state.');
+}finally{await db.close()}
+

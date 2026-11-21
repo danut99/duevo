@@ -1,12 +1,15 @@
 {
-  "name": "expiry-pocket",
+  "name": "duevo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs",
+    "test:browser": "node scripts/check-functionalities.cjs",
+    "push:keys": "node scripts/generate-push-config.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0",
@@ -15,11 +18,13 @@
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@types/node": "22.19.19",
     "@vitejs/plugin-react": "6.0.2",
     "typescript": "5.9.3",
-    "vite": "8.0.13"
+    "vite": "8.0.13",
+    "web-push": "^3.6.7"
   }
 }

@@ -1,0 +1,22 @@
+﻿const {chromium}=require('C:/Users/Danut/.codex/dragon-preview-tools/node_modules/playwright');const assert=require('node:assert/strict');
+(async()=>{const b=await chromium.launch({channel:'msedge',headless:true});const errors=[];try{
+const p=await b.newPage({serviceWorkers:'block'});p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>localStorage.setItem('expiry-pocket-theme','carbon'));
+for(const path of ['/','/login','/register']){await p.goto('http://127.0.0.1:5173'+path);await p.locator('[data-theme=carbon]').waitFor();for(const width of [320,390,1024,1440]){await p.setViewportSize({width,height:1000});assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow '+width);}if(path!=='/'){assert.equal(await p.locator('.auth-card .primary').evaluate(e=>getComputedStyle(e).borderTopColor),'rgb(10, 10, 10)');assert.equal(await p.locator('.auth-card').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');}else{await p.getByRole('button',{name:'Link app',exact:true}).click();assert.equal(await p.getByRole('dialog').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');await p.keyboard.press('Escape');}}
+await p.route('**/rest/v1/**',r=>r.fulfill({contentType:'application/json',body:r.request().url().includes('document_revisions')?'[]':JSON.stringify([{id:'audit',name:'Asigurare RCA',category:'Vehicles',reference:'B 123 ABC',expires:'2026-12-12',issued_on:'2025-12-12',days:30,reminder_days:[30,7,1],version:1,notes:''}])}));await p.route('**/functions/v1/**',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({configured:false})}));
+await p.route('**/src/main.tsx*',r=>r.fulfill({contentType:'application/javascript',body:"import React from '/node_modules/.vite/deps/react.js';import ReactDOM from '/node_modules/.vite/deps/react-dom_client.js';import Dashboard from '/src/Dashboard.tsx';import '/src/styles.css';import '/src/dark.css';import '/src/carbon.css';ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Dashboard,{displayName:'Andrei',onSignOut:()=>{}}));"}));
+const controls='.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all,.ep-reminder-chips button,.ep-category-toggle button,.ep-steps button,.ep-channel,.ep-card';
+async function audit(label){
+const bad=await p.locator(controls).evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().height).filter(e=>{const s=getComputedStyle(e);return s.borderTopWidth!=='2px'||s.borderTopColor!=='rgb(10, 10, 10)'||s.boxShadow==='none'}).map(e=>[e.className,(e.textContent||'').slice(0,30)]));assert.deepEqual(bad,[],label+' inconsistent Carbon components');
+}
+for(const path of ['/app','/documents','/documents/new','/documents/audit','/documents/audit/edit','/reminders']){
+await p.goto('http://127.0.0.1:5173'+path);await p.locator('.ep-screen').waitFor();await p.waitForTimeout(100);
+for(const width of [320,390,768,1024,1440]){await p.setViewportSize({width,height:1000});await audit(path+' '+width);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow '+width);if(width===390||width===1440)await p.screenshot({path:'outputs/carbon-audit-'+path.replaceAll('/','-')+'-'+width+'.png',fullPage:true});}
+if(path==='/documents/new'){await p.locator('.ep-type').first().click();await audit('new step 2');}
+if(path==='/documents/audit'){await p.getByRole('button',{name:'Marchează reînnoit',exact:true}).click();await p.locator('.ep-renew-form').waitFor();await audit('renew form');}
+if(path==='/reminders'){await p.locator('.ep-push-details summary').click();await audit('expanded notification settings');}
+await p.locator('.ep-account summary').click();assert.equal(await p.locator('.ep-account-popover').evaluate(e=>getComputedStyle(e).borderTopWidth),'2px');
+await p.getByRole('switch',{name:'Mod întunecat'}).click();assert.equal(await p.locator('.pocket-app').getAttribute('data-theme'),'obsidian');await p.getByRole('switch',{name:'Mod întunecat'}).click();
+console.log('PASS',path);
+}
+assert.deepEqual(errors,[]);console.log('PASS: intro, login/register, six app routes, both editor steps, renewal, notification settings, account menu, light/dark switching; all Carbon controls checked at 320–1440px with no runtime errors.');
+}finally{await b.close()}})().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,4 +1,4 @@
-﻿# Expiry Pocket
+# Duevo
 
 React + TypeScript + Vite, with Supabase Auth, Postgres, and private Storage.
 Installable on supported mobile browsers; no separate native app is required.
@@ -18,7 +18,7 @@ Never put a Supabase secret/service_role key into a VITE_ variable.
 
 1. Open https://supabase.com/dashboard/project/gibbjvdwugvoldcpttfd/sql/new
 2. Run the contents of `supabase/schema.sql`. It creates the documents table, enables row level security, and creates a private documents bucket with per-user file policies.
-3. In Authentication > URL Configuration, add your deployed app URL and http://localhost:5173 to the allowed redirect URLs. Set the Site URL to your chosen production URL.
+3. In Authentication > URL Configuration, set Site URL to http://127.0.0.1:5173 and allow http://127.0.0.1:5173/ and http://localhost:5173/ as redirect URLs.
 4. Configure Google and Email providers as described below. Email signup requires Confirm email to be disabled.
 5. Add a document and optional PDF/photo; confirm it remains after reload and can be downloaded. A second account must not see the first account's documents or files.
 
@@ -27,33 +27,31 @@ The browser uses the signed-in user's access token. The supplied publishable key
 ## Features
 
 - Google sign-in first, with email/password signup and sign-in as a fallback. No confirmation email when the Email provider is configured below.
-- Vehicles, Personal, Home, Health, and Other categories.
+- Mașină and Personal folders. Previously saved categories remain accessible in the complete list.
 - Expiry dashboard, search, category/status filters, and a renewal checklist.
 - Optional private PDF/JPG/PNG/WebP uploads up to 5 MB.
-- Download attachments, delete documents, and add renewed versions.
-- Reminder lead times of 1, 3, 7, 14, 30, 60, or 90 days.
+- Download attachments, edit documents, export calendars, and delete documents.
+- Single reminder lead time on the original schema; multiple alerts and renewal history after the additive database upgrade.
 - Responsive layout and a web app manifest for phone installation.
 
-## Notifications: pending setup
+## Reminders, renewal history and push
 
-Reminder dates currently drive the in-app checklist. No automatic WhatsApp or background push messages are sent yet, and the app labels these channels as needing setup.
+Editing and calendar export work with the original database. The additive upgrade adds multiple reminder dates, renewal history, version checks, push subscriptions and a deduplicated delivery queue.
 
-For production WhatsApp reminders:
-- Choose Meta Cloud API or a provider such as Twilio.
-- Register a WhatsApp Business sender and configure an approved utility reminder template.
-- Collect and store user consent and their destination phone number.
-- Deploy a scheduled Supabase Edge Function to find due documents and send notifications.
-- Keep provider credentials in Edge Function secrets, never in browser code.
-- Store a delivery ledger with unique document/channel/reminder-date keys; retry transient failures without duplicating successful sends.
+The push receiver, Edge Function sender, permission/settings UI, device test action, and cron SQL are implemented. The migration, function, private secrets, and 15-minute schedule were deployed to the existing project on 21 November 2026. An authorized live dispatch returned HTTP 200; anonymous calls and invalid cron secrets returned HTTP 401. Each device still needs notification permission, activation, and a real notification test. The UI checks service readiness before enabling activation.
 
-For background push:
-- Generate a VAPID key pair and configure server secrets.
-- Collect browser notification permission after a user action and store push subscriptions with user-based RLS.
-- Add service-worker push/click handlers and an Edge Function sender.
-- Schedule delivery using Supabase Cron. The app must be installed on iOS for web push.
-- Confirm delivery on actual iOS and Android devices.
+See [supabase/SETUP.md](supabase/SETUP.md) for exact setup and phone verification steps. VAPID keys were generated in the ignored `.env.push` file; never commit that file or expose its private key to browser code. No WhatsApp provider or paid messaging service has been enabled.
 
-No scheduler, messaging account, or billable provider has been configured by this project.
+Validation:
+
+```sh
+npm test
+npm run build
+npx deno check supabase/functions/push/index.ts
+npx deno test --allow-env supabase/functions/push/index_test.ts
+```
+
+Browser workflow fixtures can be run with `npm run test:browser` against a local Vite server (default port 5180; configurable via TEST_APP_URL). They create no live accounts or records. Database tests run in isolated PGlite, not in the hosted project.
 
 ## Build
 
@@ -63,8 +61,6 @@ npm run preview
 ```
 
 The output is a static `dist/` folder suitable for static hosting.
-This project's Sites hosting manifest points to that directory. Its current Sites audience is private.
-The Sites outer access gate and Supabase app login are separate; opening this to other users requires a requested hosting access change.
 
 The service worker does not cache private documents and does not provide offline document access.
 
@@ -77,7 +73,6 @@ These settings are configured in your Supabase dashboard, not by the browser's p
 
 1. In Google Cloud, create an OAuth client of type **Web application** with the app's consent screen.
 2. Add these Authorized JavaScript origins:
-   - https://expiry-pocket-danut.sablepine5.chatgpt.site
    - http://127.0.0.1:5173
    - http://localhost:5173
 3. Add this Authorized redirect URI:
@@ -97,8 +92,7 @@ New email users then receive an immediate session after choosing an email addres
 ### Redirects
 
 In Authentication > URL Configuration:
-- Set Site URL to https://expiry-pocket-danut.sablepine5.chatgpt.site
-- Add the same URL with a trailing slash to Redirect URLs.
+- Set Site URL to http://127.0.0.1:5173.
 - Add http://127.0.0.1:5173/ and http://localhost:5173/ for local development.
 
 ### Verify
@@ -111,7 +105,18 @@ Then test in the browser:
 - Sign out and sign back in with those credentials.
 - Cancel Google authorization and confirm that email sign-in remains available.
 
-The published Site is owner-private; the outer ChatGPT hosting access gate is separate from Supabase's app login.
 
 References: https://supabase.com/docs/guides/auth/social-sign-in/auth-google and https://supabase.com/docs/guides/auth/general-configuration
 
+
+
+
+## Renewal assistance
+
+Document details include a compact “Rezolvă actul” section for ITP, RCA, rovinietă, carte de identitate (CEI), permis, pașaport, CASCO, and national health card. Unknown document names offer a type selector instead of guessing. Source URLs, short contextual checklists, and the review date are defined in `src/renewal-guides.ts` (reviewed 21 November 2026).
+
+ITP opens an external Google Maps search. Users may enter a city; the app does not request geolocation or send document references, names or number plates to Maps. Nearby results depend on Maps' own location permission. Search results do not establish RAR authorization or appointment availability; the guide also links the RAR list. MAI links use official CEI, passport and driving licence appointment portals. Insurance opens ASF's provider registry; this is not a quote comparison or endorsement. Online purchases and appointments happen on external sites.
+
+Checklists are contextual summaries, not universal requirements. CEI varies by records already available; passport guidance covers adults resident in Romania; CASCO depends on the contract. Full source links remain available. Recheck these sources before changing the recorded review date. No map API keys, paid APIs or new dependencies were added.
+
+Browser check: `node scripts/check-renewal-help.cjs` against the local Vite server on port 5186. Uses an isolated rendering fixture and creates no live documents or users.

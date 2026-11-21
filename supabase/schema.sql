@@ -6,6 +6,7 @@ create table if not exists public.documents (
  category text not null check (category in ('Vehicles','Personal','Home','Health','Other')),
  reference text not null default '' check (char_length(reference) <= 120),
  expires date not null,
+ issued_on date,
  days integer not null default 30 check (days in (1,3,7,14,30,60,90)),
  notes text not null default '' check (char_length(notes) <= 2000),
  file_key text,

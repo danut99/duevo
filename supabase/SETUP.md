@@ -67,3 +67,15 @@ npx deno check supabase/functions/push/index.ts
 
 The database check runs the actual base schema and migration in an isolated PostgreSQL-compatible PGlite instance. It covers row-level account isolation, renewal history and stale version rejection, subscription validation, queue claims, retries, and delivery deduplication. It does not alter the hosted database or create live users.
 
+
+
+## Grupare auto pe ma?in?
+
+Dup? migrarea pentru profiluri, ruleaz? `migrations/202611210004_vehicles.sql` ?n Supabase SQL Editor. Actele existente r?m?n neasociate; le po?i asocia din editarea documentului. Ma?inile sunt separate pe profil ?i cont.
+
+## Termene personale (Altele)
+
+După migrarea pentru data emiterii, rulează `migrations/202611210005_personal_terms.sql` în Supabase SQL Editor. Adaugă tipul intrării și ora opțională, păstrând actele existente și regulile de acces. Ora este folosită în detalii și în exportul calendarului; notificările push continuă să folosească ora dispozitivului din setările de notificări.
+
+## Termene auto suplimentare
+După migrările 004 și 005, rulează `migrations/202611210006_auto_terms.sql`. Aceasta permite programări auto cu oră opțională și păstrează tipul ales pentru Revizie, Trusă & stingător, Parcare și Altele, inclusiv după redenumire.

@@ -4,7 +4,7 @@ self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('push',event=>{
  let payload={};try{payload=event.data?event.data.json():{}}catch{}
  const safeUrl=typeof payload.url==='string'&&(/^\/documents\/[a-zA-Z0-9-]+$/.test(payload.url)||payload.url==='/reminders')?payload.url:'/reminders';
- event.waitUntil(self.registration.showNotification('Duevo',{body:typeof payload.body==='string'?payload.body:'Ai acte de verificat. Deschide aplicația pentru detalii.',icon:'/icon-192.png?v=duevo-1',badge:'/icon-192.png?v=duevo-1',tag:typeof payload.tag==='string'?payload.tag:'expiry-reminder',data:{url:safeUrl}}));
+ event.waitUntil(self.registration.showNotification('Duevo',{body:typeof payload.body==='string'?payload.body:'Ai acte de verificat. Deschide aplicația pentru detalii.',icon:'/icon-192.png?v=duevo-1',badge:'/notification-badge.png?v=duevo-1',tag:typeof payload.tag==='string'?payload.tag:'expiry-reminder',data:{url:safeUrl}}));
 });
 self.addEventListener('notificationclick',event=>{
  event.notification.close();

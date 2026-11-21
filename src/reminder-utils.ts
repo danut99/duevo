@@ -4,9 +4,20 @@ export function dateOnly(value:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))ret
 export function reminderLabel(days:number){return days===0?'În ziua expirării':`Cu ${days} ${days===1?'zi':'zile'} înainte`}
 const escape=(value:string)=>value.replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
 function fold(line:string){let result='',part='',bytes=0;for(const char of line){const length=new TextEncoder().encode(char).length;if(bytes+length>74){result+=part+'\r\n ';part='';bytes=1;}part+=char;bytes+=length;}return result+part}
-export function calendarFile(docs:{id:string;name:string;expires:string;reminderDays?:number[];days:number}[],now=new Date()){
+export function calendarFile(docs:{id:string;name:string;expires:string;reminderDays?:number[];days:number;entryType?:string;eventTime?:string;notes?:string}[],now=new Date()){
  const stamp=now.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Duevo//Document reminders//RO','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
- for(const doc of docs){if(!dateOnly(doc.expires))continue;const end=new Date(doc.expires+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+1);lines.push('BEGIN:VEVENT',`UID:${escape(doc.id)}@expirypocket`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${doc.expires.replace(/-/g,'')}`,`DTEND;VALUE=DATE:${end.toISOString().slice(0,10).replace(/-/g,'')}`,`SUMMARY:${escape('Expiră: '+doc.name)}`,'DESCRIPTION:Verifică actul și pregătește reînnoirea.');for(const day of normalizeReminders(doc.reminderDays,doc.days))lines.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${escape('Reînnoire: '+doc.name)}`,`TRIGGER:-P${day}D`,'END:VALARM');lines.push('END:VEVENT')}
+ for(const doc of docs){
+  if(!dateOnly(doc.expires))continue;
+  const other=doc.entryType==='other',timed=other&&doc.eventTime&&/^([01]\d|2[0-3]):[0-5]\d$/.test(doc.eventTime);
+  const end=new Date(doc.expires+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+1);
+  lines.push('BEGIN:VEVENT',`UID:${escape(doc.id)}@expirypocket`,`DTSTAMP:${stamp}`);
+  // Floating local time preserves the appointment's wall-clock time on import.
+  if(timed)lines.push(`DTSTART:${doc.expires.replace(/-/g,'')}T${doc.eventTime!.replace(':','')}00`);
+  else lines.push(`DTSTART;VALUE=DATE:${doc.expires.replace(/-/g,'')}`,`DTEND;VALUE=DATE:${end.toISOString().slice(0,10).replace(/-/g,'')}`);
+  lines.push(`SUMMARY:${escape((other?'':'Expiră: ')+doc.name)}`,`DESCRIPTION:${escape(other?doc.notes||'Termen personal.':'Verifică actul și pregătește reînnoirea.')}`);
+  for(const day of normalizeReminders(doc.reminderDays,doc.days))lines.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${escape((other?'Reamintire: ':'Reînnoire: ')+doc.name)}`,`TRIGGER:-P${day}D`,'END:VALARM');
+  lines.push('END:VEVENT');
+ }
  return [...lines,'END:VCALENDAR'].map(fold).join('\r\n')+'\r\n';
 }
 export function saveFile(contents:string,name:string,type:string){const url=URL.createObjectURL(new Blob([contents],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}

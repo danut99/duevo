@@ -6,6 +6,7 @@ import {Ambient} from './PocketUI';
 import HeroPreview from './HeroPreview';
 import IntroWalkthrough from './IntroWalkthrough';
 import InstallGuide from './InstallGuide';
+import {promptInstall} from './install';
 import './pocket.css';
 import './intro-calendar.css';
 const benefits=[
@@ -18,7 +19,11 @@ export default function PocketWelcome({signedIn}:{signedIn:boolean}){
  const close=useRef<HTMLButtonElement>(null),opener=useRef<HTMLElement|null>(null);const active=benefits[index],Icon=active.Icon;
 
  function toggle(){const value=theme==='obsidian'?'carbon':'obsidian';setTheme(value);try{localStorage.setItem('expiry-pocket-theme',value)}catch{}}
- function show(value=''){opener.current=document.activeElement as HTMLElement;setPlatform(value);setCopied(false);setModal(true)}
+ async function show(value=''){
+  opener.current=document.activeElement as HTMLElement;
+  if(value==='Android'&&/Android/i.test(navigator.userAgent)&&await promptInstall())return;
+  setPlatform(value);setCopied(false);setModal(true);
+ }
  useEffect(()=>{if(!modal)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';close.current?.focus();const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')setModal(false);if(e.key==='Tab'){const items=Array.from(document.querySelectorAll<HTMLElement>('.ep-install-modal button,.ep-install-modal a'));const first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};window.addEventListener('keydown',escape);return()=>{document.body.style.overflow=previous;window.removeEventListener('keydown',escape);opener.current?.focus()}},[modal]);
  async function copy(){try{await navigator.clipboard.writeText(location.origin);setCopied(true)}catch{setCopied(false)}}
  return <div className="pocket-app ep-welcome ep-intro-v2" data-theme={theme}><Ambient/><div className="ep-app-shell"><header className="ep-intro-header"><div><span className="ep-welcome-logo"><BrandMark size={30}/></span><span><strong className="duevo-wordmark">Duevo</strong><small>Actele tale. La timp.</small></span></div><div><ThemeSwitch theme={theme} onToggle={toggle}/>{signedIn?<a className="ep-intro-skip" href="/app">Portofelul meu</a>:<a className="ep-intro-skip" href="/login">Intră în cont</a>}</div></header>

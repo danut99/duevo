@@ -9,10 +9,21 @@ await db.exec(readFileSync('supabase/schema.sql','utf8').replace(/^\uFEFF/,''));
 await db.exec(readFileSync('supabase/migrations/202611210002_document_issued_date.sql','utf8'));
 await db.exec(readFileSync('supabase/migrations/202611210002_document_issued_date.sql','utf8'));
 await db.exec(readFileSync('supabase/migrations/202611210001_reminders_and_renewals.sql','utf8').replace(/^\uFEFF/,''));
+await db.exec(readFileSync('supabase/migrations/202611210005_personal_terms.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/202611210005_personal_terms.sql','utf8'));
 await db.exec('grant all on public.documents to service_role;');
 const asUser=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')};
 await asUser(a);
+const term=(await db.query(`insert into public.documents(user_id,name,category,entry_type,event_time,expires,days,reminder_days,notes) values($1,'Programare dentist','Personal','other','14:30',current_date+7,7,array[7,1],'Cabinet, etaj 2') returning *`,[a])).rows[0];
+assert.equal(term.entry_type,'other');assert.equal(term.event_time,'14:30:00');assert.equal(term.notes,'Cabinet, etaj 2');
+await assert.rejects(()=>db.query(`update public.documents set category='Vehicles' where id=$1`,[term.id]));
+await assert.rejects(()=>db.query(`update public.documents set issued_on=current_date where id=$1`,[term.id]));
+await assert.rejects(()=>db.query(`update public.documents set entry_type='unknown' where id=$1`,[term.id]));
+await assert.rejects(()=>db.query(`update public.documents set event_time='25:00' where id=$1`,[term.id]));
+await asUser(b);assert.equal((await db.query('select * from public.documents where id=$1',[term.id])).rows.length,0);
+await asUser(a);await db.query('delete from public.documents where id=$1',[term.id]);
 let doc=(await db.query(`insert into public.documents(user_id,name,category,expires,issued_on,days,reminder_days) values($1,'RCA','Vehicles',current_date+7,current_date,30,array[30,7,1]) returning *`,[a])).rows[0];
+assert.equal(doc.entry_type,'document');assert.equal(doc.event_time,null);
 assert.equal(doc.version,1);
 assert((await db.query('select issued_on from public.documents where id=$1',[doc.id])).rows[0].issued_on);
 await asUser(b);assert.equal((await db.query('select * from public.documents')).rows.length,0);
@@ -50,6 +61,23 @@ await db.exec('reset role;set role service_role');assert.equal((await db.query('
 await asUser(a);await db.query('select public.renew_document($1,current_date+7,$2)',[doc.id,0]).catch(()=>{});
 assert.equal((await db.query('select * from public.push_deliveries')).rows.length,1);
 await asUser(b);assert.equal((await db.query('select * from public.push_deliveries')).rows.length,0);
+// Upgrade existing accepted deliveries without resending their original hour.
+await db.exec('reset role');
+await db.exec(readFileSync('supabase/migrations/202611210007_multiple_notification_hours.sql','utf8'));
+assert.deepEqual((await db.query('select hours from public.push_subscriptions')).rows[0].hours,[0]);
+await asUser(a);
+await assert.rejects(()=>db.query('update public.push_subscriptions set hours=array[]::smallint[] where id=$1',[sub.id]));
+await assert.rejects(()=>db.query('update public.push_subscriptions set hours=array[24]::smallint[] where id=$1',[sub.id]));
+await db.query('update public.push_subscriptions set hours=array[0,1]::smallint[] where id=$1',[sub.id]);
+await db.exec('reset role;set role service_role');
+const localHour=Number((await db.query("select extract(hour from now() at time zone 'UTC') as hour")).rows[0].hour);
+const extra=(await db.query('select * from public.claim_push_deliveries(10)')).rows;
+assert.equal(extra.length,localHour>=1?1:0);
+if(extra.length){
+ assert.equal((await db.query('select scheduled_hour from public.push_deliveries where id=$1',[extra[0].delivery_id])).rows[0].scheduled_hour,1);
+ await db.query('select public.finish_push_delivery($1,$2,201)',[extra[0].delivery_id,extra[0].claim_token]);
+}
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
 console.log('PASS: additive migration; account isolation; renewal history and stale-write protection; reminder validation; push endpoint/timezone checks; queue deduplication, leases, retries and accepted delivery state.');
 }finally{await db.close()}
 

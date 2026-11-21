@@ -1,6 +1,6 @@
 self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
-// No private documents are cached. Push payloads intentionally omit document names and references.
+// No private documents are cached. Push messages show the document name and reminder interval.
 self.addEventListener('push',event=>{
  let payload={};try{payload=event.data?event.data.json():{}}catch{}
  const safeUrl=typeof payload.url==='string'&&(/^\/documents\/[a-zA-Z0-9-]+$/.test(payload.url)||payload.url==='/reminders')?payload.url:'/reminders';

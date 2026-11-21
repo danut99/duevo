@@ -6,12 +6,36 @@
 .ep-expired-gap{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:10px}
 .ep-expired-gap-label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:650;color:#ef4444;animation:ep-overdue-emphasis 3s ease-in-out infinite}
 .ep-expired-gap-line{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px;position:relative;height:8px}
-.ep-expired-gap-line:before,.ep-expired-gap-line:after{content:'';width:7px;height:7px;border-radius:50%;background:#ef4444}
-.ep-expired-gap-line i{height:3px;width:3px;flex:none;border-radius:50%;background:#ef444460}
+.ep-expired-gap-line:before,.ep-expired-gap-line:after{content:'';width:7px;height:7px;flex:none;border-radius:50%;background:#ef4444;animation:ep-overdue-endpoint 2.4s ease-in-out infinite}
+.ep-expired-gap-line:after{animation-delay:1.2s}
+.ep-expired-gap-line i{height:3px;width:3px;flex:none;border-radius:50%;background:#ef4444;opacity:.35;animation:ep-overdue-wave 2.4s ease-in-out infinite}
+.ep-expired-gap-line i:nth-child(1){animation-delay:.15s}
+.ep-expired-gap-line i:nth-child(2){animation-delay:.3s}
+.ep-expired-gap-line i:nth-child(3){animation-delay:.45s}
+.ep-expired-gap-line i:nth-child(4){animation-delay:.6s}
+.ep-expired-gap-line i:nth-child(5){animation-delay:.75s}
+.ep-expired-gap-line i:nth-child(6){animation-delay:.9s}
+.ep-expired-gap-line i:nth-child(7){animation-delay:1.05s}
 .ep-expiry-slide.expired .ep-state-text{color:#ef4444!important}
 .ep-expiry-slide.expired .ep-primary{background:transparent;color:var(--ep-text);border:1px solid var(--ep-border)}
 .ep-expiry-slide.expired .ep-primary:hover{border-color:#ff7913;color:#ff7913}
 .pocket-app[data-theme=carbon] .ep-expired-gap-label,.pocket-app[data-theme=carbon] .ep-expiry-slide.expired .ep-state-text{color:#c53030!important}
 @keyframes ep-overdue-emphasis{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes ep-overdue-wave{0%,45%,100%{opacity:.35;transform:scale(1)}20%{opacity:1;transform:scale(1.8)}}
+@keyframes ep-overdue-endpoint{0%,100%{box-shadow:0 0 0 0 #ef444400}25%{box-shadow:0 0 0 5px #ef444425}50%{box-shadow:0 0 0 8px #ef444400}}
 @media(max-width:599px){.ep-expired-timeline{gap:10px;margin:16px 0;padding:14px 0;flex-wrap:wrap}.ep-expired-date{min-width:0}.ep-expired-timeline .ep-expired-date strong{font-size:11px}.ep-expired-gap{gap:7px}.ep-expired-gap-label{font-size:10px;gap:4px}.ep-expired-gap-label svg{width:13px}.ep-expired-gap-line i:nth-child(even){display:none}}
-@media(prefers-reduced-motion:reduce){.ep-expired-gap-label{animation:none}}
+@media(prefers-reduced-motion:reduce){.ep-expired-gap-label,.ep-expired-gap-line i,.ep-expired-gap-line:before,.ep-expired-gap-line:after{animation:none}}
+@media(max-width:599px){
+ .ep-expiry-slide.expired>.ep-between:first-child>.ep-right{display:none}
+ .ep-expired-timeline{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 16px;margin:18px 0 14px;padding:18px 0}
+ .ep-expired-date{grid-column:1;grid-row:1}
+ .ep-expired-today{grid-column:2;grid-row:1}
+ .ep-expired-timeline .ep-expired-date small{font-size:11px;margin-bottom:6px}
+ .ep-next .ep-expired-timeline .ep-expired-date strong{font-size:13px;line-height:1.5;white-space:normal}
+ .ep-expired-gap{grid-column:1/-1;grid-row:2;gap:10px}
+ .ep-expired-gap-label{font-size:12px;gap:7px;line-height:1.5}
+ .ep-expired-gap-line{max-width:180px}
+ .ep-expiry-slide.expired>.ep-between:last-child>div{display:none}
+ .ep-expiry-slide.expired>.ep-between:last-child{justify-content:flex-end}
+ .ep-expiry-slide.expired>.ep-between:last-child>.ep-primary{min-height:44px}
+}

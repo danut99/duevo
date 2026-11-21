@@ -20,4 +20,27 @@ await assert.rejects(()=>db.query("update public.documents set category='Persona
 await asUser(b);assert.equal((await db.query('select * from public.vehicles')).rows.length,0);
 const other=(await db.query('select id from public.wallet_profiles where is_default')).rows[0].id;
 await assert.rejects(()=>db.query('insert into public.documents(user_id,profile_id,vehicle_id,name) values($1,$2,$3,$4)',[b,other,car,'Foreign car']));
+await db.exec('reset role');const vinMigration=readFileSync('supabase/migrations/202611210013_vehicle_vin.sql','utf8');await db.exec(vinMigration);await db.exec(vinMigration);
+await asUser(a);assert.equal((await db.query('select vin from public.vehicles where id=$1',[car])).rows[0].vin,null);
+const withVin=(await db.query("insert into public.vehicles(user_id,profile_id,plate,name,vin) values($1,$2,'B 456 VIN','Test','WVWZZZ1JZXW000001') returning vin",[a,own])).rows[0];assert.equal(withVin.vin,'WVWZZZ1JZXW000001');
+for(const invalid of ['SHORT','WVWZZZ1JZXW00000I','wvwzzz1jzxw000001'])await assert.rejects(()=>db.query("insert into public.vehicles(user_id,profile_id,plate,vin) values($1,$2,$3,$4)",[a,own,invalid,invalid]));
+await asUser(b);assert.equal((await db.query('select * from public.vehicles')).rows.length,0);
+await db.exec('reset role');const editMigration=readFileSync('supabase/migrations/202611210015_edit_vehicle.sql','utf8');await db.exec(editMigration);await db.exec(editMigration);
+await asUser(a);await db.query("update public.vehicles set plate='B 999 NEW',name='Updated',vin='WVWZZZ1JZXW000001' where id=$1",[car]);
+assert.equal((await db.query('select plate from public.vehicles where id=$1',[car])).rows[0].plate,'B 999 NEW');
+await assert.rejects(()=>db.query('update public.vehicles set profile_id=$1 where id=$2',[other,car]));
+await asUser(b);assert.equal((await db.query("update public.vehicles set name='Intrusion' where id=$1 returning id",[car])).rows.length,0);
+console.log('PASS: edit vehicle plate/name/VIN; owner isolation; profile membership immutable.');
+await db.exec('reset role');await db.exec('create table public.vault_documents(id uuid primary key default gen_random_uuid(),user_id uuid,vehicle_id uuid references public.vehicles(id));create table public.renewal_packets(document_id uuid references public.documents(id),user_id uuid);');
+const deleteMigration=readFileSync('supabase/migrations/202611210014_delete_vehicle.sql','utf8');await db.exec(deleteMigration);await db.exec(deleteMigration);
+await db.query('insert into public.vault_documents(user_id,vehicle_id) values($1,$2)',[a,car]);
+await db.query('insert into public.renewal_packets(document_id,user_id) select id,user_id from public.documents where vehicle_id=$1',[car]);
+const before=(await db.query('select count(*)::int n from public.documents where user_id=$1',[a])).rows[0].n;
+await asUser(b);await assert.rejects(()=>db.query('select public.delete_vehicle($1)',[car]));
+await asUser(a);await db.query('select public.delete_vehicle($1)',[car]);
+assert.equal((await db.query('select * from public.vehicles where id=$1',[car])).rows.length,0);
+assert.equal((await db.query('select count(*)::int n from public.documents')).rows[0].n,before);
+assert.equal((await db.query('select * from public.documents where vehicle_id=$1',[car])).rows.length,0);
+await db.exec('reset role');assert.equal((await db.query('select vehicle_id from public.vault_documents')).rows[0].vehicle_id,null);assert.equal((await db.query('select * from public.renewal_packets')).rows.length,0);
+console.log('PASS: vehicle deletion is atomic, owner-only and retains documents and vault files; preparation reset; repeatable migration.');
 console.log('PASS: migration idempotence; existing acts unassigned; same-wallet assignment; duplicate plates rejected; cross-profile and cross-account isolation; personal documents cannot attach vehicles.');}finally{await db.close()}

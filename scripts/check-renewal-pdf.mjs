@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {PDFDocument} from 'pdf-lib';import {createPacketPdf} from '../src/renewal-packet-pdf.ts';
+const font=new Uint8Array(readFileSync('public/fonts/NotoSans-Regular.ttf'));
+const source=await PDFDocument.create();source.addPage().drawText('Original page one');source.addPage().drawText('Original page two');
+const png=new Uint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD1sAAAAASUVORK5CYII=','base64'));
+const input={title:'Dosar pentru reînnoirea RCA',subject:'Asigurare RCA - B 123 ABC',fields:[{label:'Titular',value:'Ștefan Țîrlea'},{label:'Perioada dorită',value:'12 luni'},{label:'Date de contact',value:'Necompletat'}],checklist:[{label:'Talon',status:'Document inclus',fileIndices:[1]},{label:'CIV',status:'Lipsește din dosar'}],note:'Dosar parțial. Copiile nu înlocuiesc actele originale. Verifică documentele înainte de trimitere.',source:{label:'ASF',url:'https://asfromania.ro/files/Ghid_RCA.pdf'},files:[{name:'Poliță.pdf',mime:'application/pdf',bytes:await source.save()},{name:'Talon-față.png',mime:'image/png',bytes:png}]};
+const bytes=await createPacketPdf(input,font),result=await PDFDocument.load(bytes);assert.equal(result.getPageCount(),3);assert.equal(result.getTitle(),input.title);
+mkdirSync('outputs',{recursive:true});writeFileSync('outputs/renewal-packet-example.pdf',bytes);
+const long=await createPacketPdf({...input,fields:Array.from({length:80},(_,i)=>({label:'Informație '+i,value:'Șir lung cu diacritice: ș ț ă â î. '.repeat(15)})),files:[]},font);assert((await PDFDocument.load(long)).getPageCount()>5);writeFileSync('outputs/renewal-packet-long.pdf',long);
+await assert.rejects(()=>createPacketPdf({...input,files:[{name:'Broken.pdf',mime:'application/pdf',bytes:new Uint8Array([1,2,3])}]},font),/Broken.pdf/);
+const form=await PDFDocument.create();const page=form.addPage();form.getForm().createTextField('field').addToPage(page);
+const formBytes=await form.save();await assert.rejects(()=>createPacketPdf({...input,files:[{name:'Form.pdf',mime:'application/pdf',bytes:formBytes}]},font),/câmpuri interactive/);
+console.log('PASS: Unicode summary, complete PDF page merging, image embedding, long-text pagination, and explicit rejection of corrupt/interactive files.');

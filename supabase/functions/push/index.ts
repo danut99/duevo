@@ -27,9 +27,9 @@ Deno.serve(async req=>{
     let code=400;
     if(allowedEndpoint(job.endpoint)){
      // A document may have been renewed/deleted after this batch was claimed.
-     const {data:current,error:readError}=await admin.from('documents').select('reminder_version,profile_id').eq('id',job.document_id).maybeSingle();
-     if(readError)code=503;else if(!current||current.reminder_version!==job.document_version){const {error:cancelError}=await admin.from('push_deliveries').update({status:'cancelled',error_code:'document_changed',lease_token:null,lease_until:null}).eq('id',job.delivery_id).eq('lease_token',job.claim_token);if(cancelError)throw cancelError;continue;}
-     else try{const {data:profile,error:profileError}=await admin.from('wallet_profiles').select('name').eq('id',current.profile_id).maybeSingle();if(profileError)throw profileError;const result=await webpush.sendNotification({endpoint:job.endpoint,keys:{p256dh:job.p256dh,auth:job.auth}},JSON.stringify(notificationPayload(job.document_id,job.document_version,job.lead_days,profile?.name)),{TTL:86400,timeout:8000});code=result.statusCode}catch(error){code=responseCode(error)}
+     const {data:current,error:readError}=await admin.from('documents').select('reminder_version,profile_id,completed_at,name,entry_type').eq('id',job.document_id).maybeSingle();
+     if(readError)code=503;else if(!current||current.completed_at||current.reminder_version!==job.document_version){const {error:cancelError}=await admin.from('push_deliveries').update({status:'cancelled',error_code:'document_changed',lease_token:null,lease_until:null}).eq('id',job.delivery_id).eq('lease_token',job.claim_token);if(cancelError)throw cancelError;continue;}
+     else try{const {data:profile,error:profileError}=await admin.from('wallet_profiles').select('name').eq('id',current.profile_id).maybeSingle();if(profileError)throw profileError;const result=await webpush.sendNotification({endpoint:job.endpoint,keys:{p256dh:job.p256dh,auth:job.auth}},JSON.stringify(notificationPayload(job.document_id,job.document_version,job.lead_days,profile?.name,current.name,current.entry_type)),{TTL:86400,timeout:8000});code=result.statusCode}catch(error){code=responseCode(error)}
     }
     const {error:finishError}=await admin.rpc('finish_push_delivery',{delivery_id:job.delivery_id,claim_token:job.claim_token,result_code:code});if(finishError)throw finishError;
     if(code>=200&&code<300)accepted++;else failed++;

@@ -7,13 +7,17 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs && node scripts/check-wallet-profiles.mjs && node scripts/check-vehicles.mjs",
-    "test:browser": "node scripts/check-functionalities.cjs",
-    "push:keys": "node scripts/generate-push-config.mjs"
+    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs && node scripts/check-wallet-profiles.mjs && node scripts/check-vehicles.mjs && node scripts/check-document-vault.mjs",
+    "test:browser": "node scripts/check-functionalities.cjs && node scripts/check-usability.cjs && node scripts/check-photo-folder.cjs",
+    "push:keys": "node scripts/generate-push-config.mjs",
+    "test:vault": "node scripts/check-document-vault.mjs",
+    "test:renewal": "node scripts/check-renewal-packets.mjs && node scripts/check-contextual-files.mjs && node --experimental-strip-types scripts/check-renewal-pdf.mjs && node --experimental-strip-types scripts/check-renewal-preselection.mjs"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/supabase-js": "^2.0.0",
     "lucide-react": "^1.31.0",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },

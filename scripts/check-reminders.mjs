@@ -1,4 +1,4 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createContext,runInContext} from 'node:vm';
 import ts from 'typescript';
@@ -11,6 +11,7 @@ assert(ics.includes('DTEND;VALUE=DATE:20270101'));assert(ics.includes('TRIGGER:-
 const folded=calendarFile([{id:'long',name:'ș'.repeat(150),expires:'2028-02-29',days:7}]);assert(folded.split('\r\n').every(line=>Buffer.byteLength(line)<=75));
 const appointment=calendarFile([{id:'appointment',entryType:'other',name:'Dentist',expires:'2026-12-02',eventTime:'14:30',notes:'Etaj 2\nRecepție',days:1,reminderDays:[1,0]}]);
 assert(appointment.includes('DTSTART:20261202T143000'));assert(appointment.includes('SUMMARY:Dentist'));assert(!appointment.includes('Expiră:'));assert(appointment.includes('DESCRIPTION:Etaj 2\\nRecepție'));assert(appointment.includes('TRIGGER:-P0D'));
+const relativeCalendar=calendarFile([{id:'relative',entryType:'other',name:'Dentist',expires:'2026-12-02',eventTime:'14:30',days:1,eventReminderMinutes:[60,15]}]);assert(relativeCalendar.includes('TRIGGER:-PT60M'));assert(relativeCalendar.includes('TRIGGER:-PT15M'));assert(!calendarFile([{id:'done',name:'Finalizat',expires:'2026-12-02',days:1,completedAt:'2026-12-01'}]).includes('BEGIN:VEVENT'));
 const term=calendarFile([{id:'term',entryType:'other',name:'Abonament',expires:'2026-12-02',days:7}]);
 assert(term.includes('DTSTART;VALUE=DATE:20261202'));assert(term.includes('DTEND;VALUE=DATE:20261203'));assert(term.includes('SUMMARY:Abonament'));
 const {allowedEndpoint,notificationPayload,responseCode}=await load('supabase/functions/push/logic.ts');
@@ -23,3 +24,8 @@ handlers.push({data:{json:()=>({body:'Test',url:'https://evil.test/',tag:'x'})},
 handlers.notificationclick({notification:{close:()=>{},data:{url:'//evil.test/'}},waitUntil:promise=>pending=promise});await pending;assert.equal(navigated[0],'https://example.test/reminders');
 handlers.notificationclick({notification:{close:()=>{},data:{url:'/documents/abc-123'}},waitUntil:promise=>pending=promise});await pending;assert.equal(navigated[1],'https://example.test/documents/abc-123');
 console.log('PASS: calendar escaping/folding/date boundaries and multiple alarms; endpoint restrictions; generic push payload; notification clicks stay on the app origin.');
+
+assert(notificationPayload('id',2,14,'Eu','Asigurare RCA','document').body.includes('Asigurare RCA expir\u0103 \u00een 14 zile'));
+assert(notificationPayload('id',2,1,'Eu','CI','document').body.includes('1 zi.'));
+assert(notificationPayload('id',2,0,'Eu','CI','document').body.includes('ast\u0103zi'));
+assert(notificationPayload('id',2,-60,'Eu','Dentist','other').body.includes('60 minute'));

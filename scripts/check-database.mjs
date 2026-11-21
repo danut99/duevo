@@ -1,4 +1,4 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();
@@ -78,6 +78,35 @@ if(extra.length){
  await db.query('select public.finish_push_delivery($1,$2,201)',[extra[0].delivery_id,extra[0].claim_token]);
 }
 assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
+// Lifecycle upgrade is repeatable and preserves accepted delivery slots.
+await db.exec('reset role');
+await db.exec(readFileSync('supabase/migrations/202611210008_term_lifecycle_and_timed_reminders.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/202611210008_term_lifecycle_and_timed_reminders.sql','utf8'));
+await asUser(a);
+const timed=(await db.query(`insert into public.documents(user_id,name,category,entry_type,event_time,event_timezone,event_reminder_minutes,expires,days,reminder_days)
+ values($1,'Dentist','Personal','other',(now() at time zone 'UTC'+interval '45 minutes')::time,'UTC',array[60],(now() at time zone 'UTC'+interval '45 minutes')::date,1,array[1]) returning *`,[a])).rows[0];
+await assert.rejects(()=>db.query("update public.documents set event_timezone='Invalid/Zone' where id=$1",[timed.id]));
+await assert.rejects(()=>db.query('update public.documents set event_reminder_minutes=array[5] where id=$1',[timed.id]));
+await assert.rejects(()=>db.query('update public.documents set event_time=null where id=$1',[timed.id]));
+await assert.rejects(()=>db.query('update public.documents set completed_at=now() where id=$1',[doc.id]));
+await db.exec('reset role;set role service_role');
+const relative=(await db.query('select * from public.claim_push_deliveries(10)')).rows.filter(j=>j.document_id===timed.id);
+assert.equal(relative.length,1);assert.equal(relative[0].lead_days,-60);
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.length,0);
+await asUser(b);assert.equal((await db.query('update public.documents set completed_at=now() where id=$1 returning id',[timed.id])).rows.length,0);
+await asUser(a);await db.query('update public.documents set completed_at=now() where id=$1',[timed.id]);
+await db.exec('reset role;set role service_role');
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.filter(j=>j.document_id===timed.id).length,0);
+assert.equal((await db.query('select status from public.push_deliveries where id=$1',[relative[0].delivery_id])).rows[0].status,'cancelled');
+await asUser(a);
+await db.query("update public.documents set completed_at=null,event_time=(now() at time zone 'UTC'+interval '3 hours')::time,expires=(now() at time zone 'UTC'+interval '3 hours')::date where id=$1",[timed.id]);
+await db.exec('reset role;set role service_role');
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.filter(j=>j.document_id===timed.id&&j.lead_days<0).length,0);
+await asUser(a);
+await db.query("update public.documents set event_time=(now() at time zone 'UTC'-interval '5 minutes')::time,expires=(now() at time zone 'UTC'-interval '5 minutes')::date where id=$1",[timed.id]);
+await db.exec('reset role;set role service_role');
+assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.filter(j=>j.document_id===timed.id&&j.lead_days<0).length,0);
+console.log('PASS: term lifecycle migration idempotence; completion isolation and queue cancellation; relative minute alerts; no early or post-event delivery.');
 console.log('PASS: additive migration; account isolation; renewal history and stale-write protection; reminder validation; push endpoint/timezone checks; queue deduplication, leases, retries and accepted delivery state.');
 }finally{await db.close()}
 

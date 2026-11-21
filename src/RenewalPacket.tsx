@@ -1,0 +1,73 @@
+import {useEffect,useRef,useState} from 'react';
+import {Check,Download,FilePlus2,FileText,Save,Share2,X} from 'lucide-react';
+import type {Doc} from './supabase';
+import {createVault,linkFile,listFiles,readFile,uploadFiles,validateFiles} from './document-vault';
+import type {FileOwner} from './document-vault';
+import type {DocumentFile} from './document-vault';
+import FileThumbnail from './FileThumbnail';
+import {Preview} from './DocumentFiles';
+import {emptyDraft,loadPacket,savePacket,requirementKind} from './renewal-packet-data';
+import type {PacketCandidate,PacketDraft} from './renewal-packet-data';
+import {packetConfigs} from './renewal-packet-config';
+import type {PacketRequirement} from './renewal-packet-config';
+import {guides} from './renewal-guides';
+import './renewal-packet.css';
+
+const normalized=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('ro-RO');
+export default function RenewalPacket({doc,code,onClose,onFilesChanged}:{doc:Doc;code:string;onClose:()=>void;onFilesChanged?:()=>void}){
+ const config=packetConfigs[code],guide=guides[code];
+ const fields=[...config.fields,{id:'currentExpiry',label:'Expirarea actuală',type:'date',optional:true},{id:'reference',label:'Serie / referință',optional:true}];
+ const requirements=[...config.requirements,{id:'extra',label:'Alte documente cerute în cazul tău',hint:'Adaugă doar ce ți-a cerut destinatarul.',category:doc.category==='Vehicles'?'Vehicles':'Personal',terms:[],optional:true} as PacketRequirement];
+ const [draft,setDraft]=useState<PacketDraft>(emptyDraft),[candidates,setCandidates]=useState<PacketCandidate[]>([]),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState(''),[generated,setGenerated]=useState<File|null>(null),[previewUrl,setPreviewUrl]=useState('');
+ const [changing,setChanging]=useState<Record<string,boolean>>({});
+ const [filePreview,setFilePreview]=useState<{file:DocumentFile;blob:Blob}|null>(null);
+ async function openFile(file:DocumentFile,blob?:Blob){setError('');try{const value=blob||await readFile(file);if(active.current)setFilePreview({file,blob:value})}catch(e){setError((e as Error).message)}}
+ const resultRef=useRef<HTMLDivElement>(null);
+ const active=useRef(true),owners=useRef<Record<string,FileOwner>>({});
+ async function load(){setLoading(true);setError('');try{const data=await loadPacket(doc,code);if(!active.current)return;owners.current=data.owners;const values={vin:data.vehicle?.vin||'',plate:data.vehicle?.plate||(doc.category==='Vehicles'?doc.reference.split(' • ')[0]:''),currentExpiry:doc.expires,reference:doc.reference,...data.draft.values};setDraft({...data.draft,values});setCandidates(data.candidates)}catch(e){if(active.current)setError((e as Error).message)}finally{if(active.current)setLoading(false)}}
+ useEffect(()=>{active.current=true;void load();return()=>{active.current=false}},[doc.id,code]);
+ useEffect(()=>{setGenerated(null);setMessage('')},[draft]);
+ useEffect(()=>{if(!generated){setPreviewUrl('');return}const url=URL.createObjectURL(generated);setPreviewUrl(url);return()=>URL.revokeObjectURL(url)},[generated]);
+ const chosen=(id:string)=>candidates.filter(c=>(draft.assignments[id]||[]).includes(c.file.id));
+ const unresolved=requirements.filter(r=>!r.optional&&!chosen(r.id).length&&!draft.originals.includes(r.id));
+ const missingValues=config.fields.filter(f=>!f.optional&&!draft.values[f.id]?.trim());
+ const selected=[...new Map(requirements.flatMap(r=>chosen(r.id)).map(c=>[c.file.storage_key,c])).values()];
+ function toggle(req:string,id:string){setDraft(prev=>({...prev,assignments:{...prev.assignments,[req]:(prev.assignments[req]||[]).includes(id)?(prev.assignments[req]||[]).filter(v=>v!==id):[...(prev.assignments[req]||[]),id]}}))}
+ async function ownerFor(req:PacketRequirement){
+  if(owners.current[req.id])return owners.current[req.id];
+  const kind=requirementKind(req.id,code),name=kind?req.label:req.label+' - '+doc.name;
+  const entry=await createVault(doc.profileId!,name,req.category,req.category==='Vehicles'?doc.vehicleId||'':'',kind);
+  return owners.current[req.id]={vaultId:entry.id};
+ }
+ async function choose(req:PacketRequirement,candidate:PacketCandidate){
+  if(candidate.category!=='Photos'){toggle(req.id,candidate.file.id);return}
+  setBusy(true);setError('');try{const owner=await ownerFor(req),file=await linkFile(candidate.file,owner);setCandidates(prev=>prev.map(c=>c.file.id===file.id?{file,title:req.label,category:req.category,vehicleId:req.category==='Vehicles'?doc.vehicleId:undefined,documentId:owner.documentId}:c));toggle(req.id,file.id);onFilesChanged?.()}catch(e){setError((e as Error).message)}finally{setBusy(false)}
+ }
+ async function upload(req:PacketRequirement,files:File[]){
+  setBusy(true);setError('');let owner:FileOwner|undefined,before:Set<string>|undefined;
+  try{validateFiles(files);owner=await ownerFor(req);before=new Set((await listFiles(owner)).map(f=>f.storage_key));await uploadFiles(owner,files)}catch(e){setError((e as Error).message)}finally{
+   if(owner&&before)try{const rows=await listFiles(owner),newFiles=rows.filter(f=>!before!.has(f.storage_key));if(active.current){if(newFiles.length)onFilesChanged?.();const added=newFiles.map(file=>({file,title:req.label,category:req.category,vehicleId:req.category==='Vehicles'?doc.vehicleId:undefined,documentId:owner!.documentId}));setCandidates(prev=>[...new Map([...prev,...added].map(c=>[c.file.storage_key,c])).values()]);setDraft(prev=>({...prev,assignments:{...prev.assignments,[req.id]:[...new Set([...(prev.assignments[req.id]||[]),...newFiles.map(f=>f.id)])]}}))}}catch(e){setError((e as Error).message)}if(active.current)setBusy(false);
+  }
+ }
+ async function save(){setBusy(true);setError('');try{await savePacket(doc,code,draft);setMessage('Pregătirea a fost salvată. O găsești aici când revii.')}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
+ async function generate(){
+  setBusy(true);setError('');setGenerated(null);setMessage('Pregătim PDF-ul…');
+  try{
+   if(selected.length>30)throw Error('Alege maximum 30 de fișiere pentru un singur dosar.');
+   let saveWarning='';try{await savePacket(doc,code,draft)}catch{saveWarning=' Pregătirea nu a fost salvată în cont; PDF-ul poate fi descărcat.'}
+   const {createPacketPdf,normalizePacketImage}=await import('./renewal-packet-pdf');
+   const response=await fetch('/fonts/NotoSans-Regular.ttf',{signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('Fontul PDF nu poate fi încărcat. Încearcă din nou.');const font=new Uint8Array(await response.arrayBuffer());
+   const files=[];let total=0;
+   for(const candidate of selected){setMessage(`Pregătim ${files.length+1} din ${selected.length}: ${candidate.file.name}`);const blob=await readFile(candidate.file);total+=blob.size;if(total>50*1024*1024)throw Error('Fișierele selectate depășesc 50 MB. Generează dosare mai mici.');const mime=candidate.file.mime_type||blob.type;const prepared=await normalizePacketImage(new Blob([blob],{type:mime}));files.push({name:candidate.title,...prepared})}
+   const bytes=await createPacketPdf({title:config.title,subject:doc.name,fields:fields.map(f=>({label:f.label,value:draft.values[f.id]||''})),checklist:requirements.map(r=>({label:r.label+(r.optional?' (după caz)':''),fileIndices:chosen(r.id).map(c=>selected.findIndex(s=>s.file.storage_key===c.file.storage_key)),status:chosen(r.id).length?'Document inclus':draft.originals.includes(r.id)?'Disponibil în original; copie neinclusă':r.optional?'Neinclus':'Lipsește din dosar'})),note:config.note,source:guide?{label:guide.source,url:guide.sourceUrl}:undefined,files},font);
+   if(!active.current)return;const name=`dosar-${code.toLowerCase()}-${(draft.values.plate||doc.name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9-]+/g,'-').slice(0,60)}.pdf`;setGenerated(new File([new Uint8Array(bytes)],name,{type:'application/pdf'}));setMessage('PDF pregătit. Verifică-l înainte de trimitere.'+saveWarning);
+  }catch(e){setError((e as Error).message);setMessage('')}finally{if(active.current)setBusy(false)}
+ }
+ async function share(){if(!generated)return;setError('');try{await navigator.share({files:[generated],title:config.title})}catch(e){if((e as DOMException).name!=='AbortError')setError('Trimiterea nu a reușit. Descarcă PDF-ul și trimite-l din telefon.')}}
+ let canShare=false;try{canShare=!!generated&&!!navigator.canShare?.({files:[generated]})}catch{}
+ useEffect(()=>{if(generated||error)resultRef.current?.scrollIntoView({block:'nearest',behavior:'smooth'})},[generated,error,previewUrl]);
+ return <section className="ep-renewal-packet" aria-label="Dosar pentru reînnoire"><div className="ep-rp-heading"><div><small>ACTE ȘI INFORMAȚII</small><h3>{config.title}</h3></div><button type="button" className="ep-icon-button" aria-label="Închide dosarul de reînnoire" disabled={busy} onClick={onClose}><X size={18}/></button></div><p className="ep-rp-note">{config.note}</p>{loading?<p role="status">Căutăm documentele din profilul și dosarul acestei mașini…</p>:<><p className="ep-rp-intro">Alege ce trimiți. Actele identificate pentru acest dosar sunt preselectate; poți debifa sau schimba selecția.</p><fieldset disabled={busy}><legend>Documente de pregătit</legend>{requirements.map(req=>{
+ const options=candidates.filter(c=>c.category===req.category||c.category==='Photos'),suggested=(c:PacketCandidate)=>req.terms.some(t=>normalized(c.title+' '+c.file.name).includes(t));const sorted=[...options].sort((a,b)=>Number(suggested(b))-Number(suggested(a)));
+ return <div className="ep-rp-requirement" key={req.id}><div className="ep-rp-row"><strong>{req.label}{req.optional&&<small>După caz</small>}</strong><span className={chosen(req.id).length||draft.originals.includes(req.id)?'ep-rp-ready':'ep-rp-missing'}>{chosen(req.id).length?<><Check size={14}/>{chosen(req.id).length} {chosen(req.id).length===1?'fișier ales':'fișiere alese'}</>:draft.originals.includes(req.id)?'În original':req.optional?'Opțional':'De pregătit'}</span></div><p>{req.hint}</p>{chosen(req.id).length>0&&<ul className="ep-rp-selected-files" aria-label={'Fișiere alese: '+req.label}>{chosen(req.id).map(c=><li key={c.file.id}><FileThumbnail file={c.file} onOpen={(file,blob)=>void openFile(file,blob)}/><span className="ep-file-thumbnail-check" aria-hidden="true"><Check size={11}/></span><span className="ep-rp-file-caption">{c.title}</span></li>)}</ul>}{filePreview&&chosen(req.id).some(c=>c.file.id===filePreview.file.id)&&<Preview file={filePreview.file} blob={filePreview.blob} onClose={()=>setFilePreview(null)}/ >}{chosen(req.id).length>0&&!changing[req.id]?<button type="button" className="ep-rp-change" onClick={()=>setChanging(prev=>({...prev,[req.id]:true}))}>Schimbă</button>:sorted.length?<details open={changing[req.id]||undefined}><summary>Alege din documentele salvate ({sorted.length})</summary><div className="ep-rp-options">{sorted.map(c=><label key={c.file.id}><input type="checkbox" checked={(draft.assignments[req.id]||[]).includes(c.file.id)} onChange={()=>void choose(req,c)}/><span title={c.file.name}><strong>{c.title}</strong><small>{c.category==='Photos'?'Imagine neasociată · se va lega de acest act':c.file.mime_type==='application/pdf'?'PDF':'Imagine'}{suggested(c)?' · sugerat':''}</small></span></label>)}</div>{changing[req.id]&&<button type="button" className="ep-rp-change" onClick={()=>setChanging(prev=>({...prev,[req.id]:false}))}>Gata</button>}</details>:<p className="ep-rp-no-files">Nu am găsit fișiere salvate pentru această categorie.</p>}<div className="ep-rp-requirement-actions"><label className="ep-secondary ep-rp-upload"><FilePlus2 size={16}/>Adaugă poze sau PDF<input type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" aria-label={'Adaugă fișiere: '+req.label} onChange={e=>{const files=Array.from(e.target.files||[]);e.target.value='';if(files.length)void upload(req,files)}}/></label><label className="ep-rp-original"><input type="checkbox" checked={draft.originals.includes(req.id)} onChange={()=>setDraft(prev=>({...prev,originals:prev.originals.includes(req.id)?prev.originals.filter(id=>id!==req.id):[...prev.originals,req.id]}))}/>Îl am în original</label></div></div>
+ })}<div className="ep-rp-fields"><h4>Informații pentru destinatar</h4>{fields.map(field=><label key={field.id}>{field.label}{field.optional?' (opțional)':''}<input type={field.type||'text'} maxLength={500} value={draft.values[field.id]||''} onChange={e=>setDraft(prev=>({...prev,values:{...prev.values,[field.id]:e.target.value}}))}/></label>)}</div></fieldset><div className="ep-rp-summary"><FileText size={20}/><p>{selected.length} {selected.length===1?'fișier selectat.':'fișiere selectate.'}{' '}{unresolved.length||missingValues.length?` Mai ai de verificat ${unresolved.length} documente și ${missingValues.length} informații. Poți genera și un dosar parțial; lipsurile vor fi indicate în PDF.`:'Lista de pregătire este completată. Verifică titularul, valabilitatea și cerințele destinatarului.'}</p></div><div className="ep-rp-actions"><button type="button" className="ep-secondary" disabled={busy} onClick={()=>void save()}><Save size={16}/>Salvează pregătirea</button><button type="button" className="ep-primary" disabled={busy} onClick={()=>void generate()}><FileText size={16}/>{busy?'Se pregătește…':'Generează PDF pentru trimitere'}</button></div></>}<div ref={resultRef} className="ep-rp-result" aria-live="polite">{error&&<div className="ep-error" role="alert">{error}{!loading&&!candidates.length&&<button type="button" disabled={busy} onClick={()=>void load()}>Încearcă din nou</button>}</div>}{message&&<p className="ep-rp-message" role="status">{message}</p>}{generated&&previewUrl&&<div className="ep-rp-output"><h4>Dosarul tău este pregătit</h4><p>{generated.name} · {(generated.size/1024/1024).toLocaleString('ro-RO',{maximumFractionDigits:1})} MB</p><iframe className="ep-rp-pdf-preview" src={previewUrl} title="Dosarul PDF generat"/><a href={previewUrl} target="_blank" rel="noopener noreferrer">Verifică PDF-ul</a><div className="ep-rp-actions"><a className="ep-secondary" href={previewUrl} download={generated.name}><Download size={16}/>Descarcă PDF</a>{canShare?<button type="button" className="ep-primary" onClick={()=>void share()}><Share2 size={16}/>Trimite PDF</button>:<p>Descarcă PDF-ul, apoi atașează-l în WhatsApp sau email.</p>}</div>{canShare&&<p>„Trimite PDF” deschide aplicațiile disponibile pe dispozitiv, inclusiv WhatsApp sau Mail dacă sunt instalate.</p>}</div>}</div></section>;
+}

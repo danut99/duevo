@@ -1,3 +1,4 @@
+import PasswordRecovery from './PasswordRecovery';
 import BrandMark from './BrandMark';
 import {useEffect,useState} from 'react';
 import type {Session} from '@supabase/supabase-js';
@@ -15,6 +16,7 @@ export default function App(){
   const [authTheme,setAuthTheme]=useState(()=>{try{return localStorage.getItem('expiry-pocket-theme')==='carbon'?'carbon':'obsidian'}catch{return 'obsidian'}});
   const [session,setSession]=useState<Session|null>(null);
   const [ready,setReady]=useState(false);
+  const [recovering,setRecovering]=useState(window.location.pathname==='/reset-password');
   const signup=window.location.pathname==='/register';
   const isLanding=window.location.pathname==='/';
   const isAuth=signup||window.location.pathname==='/login';
@@ -37,6 +39,7 @@ export default function App(){
       if(active){setSession(data.session);setReady(true);if(error)setError(error.message);}
     }).catch(e=>{if(active){setError(e.message);setReady(true);}});
     const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,value)=>{
+      if(active&&_event==='PASSWORD_RECOVERY')setRecovering(true);
       if(active)setSession(value);
     });
     return()=>{active=false;subscription.unsubscribe();};
@@ -79,6 +82,7 @@ export default function App(){
   }
 
   if(!ready)return <div className="pocket-app ep-auth" data-theme={authTheme}><div className="auth-shell" role="status" aria-label="Se încarcă"><LoaderCircle className="spin" aria-hidden="true"/></div></div>;
+  if(recovering||location.pathname==='/forgot-password')return <PasswordRecovery reset={recovering} hasSession={!!session} theme={authTheme}/>;
   if(isLanding)return <Landing signedIn={!!session}/>;
   if(ready&&session&&isAuth){const next=new URLSearchParams(location.search).get('next');window.location.replace(next&&(next==='/app'||next==='/overview'||next==='/reminders'||next==='/documents'||next.startsWith('/documents/'))?next:'/documents');return null;} 
   if(ready&&!session&&!isAuth){window.location.replace('/login?next='+encodeURIComponent(window.location.pathname+window.location.search));return null;}
@@ -110,7 +114,7 @@ export default function App(){
           {busy==='email'?<LoaderCircle className="spin" size={18}/>:null}
           {busy==='email'?'Te rugăm să aștepți…':signup?'Creează cont cu email':'Intră în cont cu email'}
         </button>
-      </form>
+      </form>{!signup&&<a className="text-button" href="/forgot-password">Ai uitat parola?</a>}
     </>}
     {error&&<div className="error" role="alert">{error}</div>}
     <a className="text-button" href={signup?'/login':'/register'}>

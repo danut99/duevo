@@ -1,4 +1,4 @@
-﻿import ExpiryCalendar from './ExpiryCalendar';
+import ExpiryCalendar from './ExpiryCalendar';
 import CalendarExportCard from './CalendarExportCard';
 ﻿import {useEffect,useState} from 'react';
 import {AlertTriangle,ArrowUpRight,Bell,CalendarDays,CheckCircle2,ChevronRight,Clock,FilePlus2,LoaderCircle,ShieldCheck,Smartphone} from 'lucide-react';
@@ -8,7 +8,7 @@ import {deviceSettings,getPushConfig,pushSupported} from './push';
 import './overview.css';
 
 function Timing({days,other=false}:{days:number;other?:boolean}){
-return <span className={'ov-timing '+(days<0?'overdue':days<=7?'near':'')}>{days<0?`${other?'Termen depășit cu':'Expirat de'} ${Math.abs(days)} zile`:days===0?(other?'Astăzi':'Expiră astăzi'):days===1?'Mai ai o zi':`Mai ai ${days} zile`}</span>;
+return <span className={'ov-timing '+(days<0?'overdue':days<=7?'near':'')}>{days<0?`${other?'Termen depășit cu':'Expirat de'} ${Math.abs(days)} ${Math.abs(days)===1?'zi':'zile'}`:days===0?(other?'Astăzi':'Expiră astăzi'):days===1?'Mai ai o zi':`Mai ai ${days} zile`}</span>;
 }
 export default function Overview({docs,loading,failed,open}:{docs:Doc[];loading:boolean;failed:boolean;open:(path:string)=>void}){
  const [push,setPush]=useState<'checking'|'active'|'pending'|'off'|'blocked'|'unsupported'|'error'>('checking');
@@ -38,7 +38,7 @@ export default function Overview({docs,loading,failed,open}:{docs:Doc[];loading:
  }[push];
  return <div className="ep-screen ep-overview">
  <header className="ov-heading"><div><p className="ov-eyebrow">PRIVIRE DE ANSAMBLU</p><h1 tabIndex={-1}>Mai puține griji.<br/><span>Totul la timp.</span></h1><p>Ce ai de rezolvat și ce urmează, într-o privire.</p></div><span className="ov-date"><CalendarDays size={17}/>{new Date().toLocaleDateString('ro-RO',{day:'numeric',month:'long'})}</span></header>
- <CalendarExportCard docs={docs} loading={loading||failed}/>
+
  {loading?<div className="ep-card ov-loading" role="status"><LoaderCircle size={25} className="spin"/><p>Pregătim rezumatul actelor tale…</p></div>:failed?<div className="ep-card ov-empty"><AlertTriangle size={30}/><h2>Rezumatul nu este disponibil</h2><p>Încearcă din nou folosind butonul de mai sus.</p></div>:!docs.length?<section className="ep-card ov-first"><span className="ov-symbol"><FilePlus2 size={26}/></span><div><p className="ov-eyebrow">UN ÎNCEPUT SIMPLU</p><h2>Primul act. O grijă în minus.</h2><p>Adaugă un RCA, un buletin sau orice act cu termen. Aici vei vedea ce urmează și când trebuie să acționezi.</p><button className="ep-primary" onClick={()=>open('/documents/new')}><FilePlus2 size={17}/>Adaugă primul act</button></div></section>:<>
  <section className={'ep-card ov-outlook '+(attention.length?'needs-attention':'all-clear')} aria-labelledby="outlook-title"><span className="ov-symbol">{attention.length?<AlertTriangle size={27}/>:<ShieldCheck size={27}/>}</span><div className="ov-outlook-copy"><p className="ov-eyebrow">{attention.length?'ÎNCEPE DE AICI':'UN MOMENT DE LINIȘTE'}</p><h2 id="outlook-title">{attention.length?'Ai câteva lucruri de rezolvat.':'Ești la zi.'}</h2><p>{overdue.length?`${overdue.length} ${overdue.length===1?'termen depășit are':'termene depășite au'} nevoie de atenția ta.`:attention.length?`${attention.length} ${attention.length===1?'termen':'termene'} în următoarele 7 zile.`:'Niciun act expirat și niciun termen în următoarele 7 zile.'}</p></div><button className="ep-secondary" onClick={()=>open(urgent?'/documents/'+urgent.id:'/documents')}>{attention.length?'Vezi ce ai de rezolvat':'Deschide portofelul'}<ChevronRight size={16}/></button></section>
  <section className="ov-summary" aria-label="Rezumat termene"><div><span><AlertTriangle size={17}/>Expirate</span><strong>{overdue.length}</strong></div><div><span><Clock size={17}/>În 30 de zile</span><strong>{upcoming.length}</strong></div><div><span><CheckCircle2 size={17}/>Fără urgențe</span><strong>{docs.filter(d=>daysUntil(d.expires)>30).length}</strong></div></section>
@@ -49,6 +49,7 @@ export default function Overview({docs,loading,failed,open}:{docs:Doc[];loading:
  <ExpiryCalendar docs={docs} open={open}/>
  </>}
  <section className="ep-card ov-notifications" aria-labelledby="notifications-title"><span className={'ov-symbol '+(push==='active'?'connected':'')}><Smartphone size={25}/></span><div><p className="ov-eyebrow">PLASA TA DE SIGURANȚĂ</p><h2 id="notifications-title">{pushCopy[0]}</h2><p role="status">{pushCopy[1]}</p></div><button className="ep-secondary" onClick={()=>open('/reminders')}><Bell size={16}/>{push==='active'?'Vezi setările':'Setează reamintirile'}</button></section>
+ <CalendarExportCard docs={docs} loading={loading||failed}/>
  <p className="ov-footnote"><ShieldCheck size={14}/>Un rezumat pentru tine. Toate documentele rămân în „Actele mele”.</p>
  </div>;
 }

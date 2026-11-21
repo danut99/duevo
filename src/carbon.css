@@ -16,7 +16,7 @@
 .pocket-app:is(.ep-workspace,.ep-welcome,.ep-auth)[data-theme=carbon] :is(.ep-primary,.ep-secondary,.ep-pill,.ep-danger,.ep-icon-button,.ep-mark-all):disabled{opacity:.5;filter:none;cursor:not-allowed}
 .pocket-app.ep-workspace[data-theme=carbon] .ep-account-header .ep-bell{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow);color:var(--ep-ink)}
 .pocket-app.ep-workspace[data-theme=carbon] .ep-account-popover{background:#fff;border:2px solid var(--ep-ink);box-shadow:var(--ep-shadow)}
-.pocket-app.ep-workspace[data-theme=carbon] .ep-account-popover button{background:#f4f4f6;border:2px solid var(--ep-ink);border-radius:10px;box-shadow:var(--ep-control-shadow);padding:10px;margin-top:12px;width:100%;color:var(--ep-ink)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-account-popover>button{background:#f4f4f6;border:2px solid var(--ep-ink);border-radius:10px;box-shadow:var(--ep-control-shadow);padding:10px;margin-top:12px;width:100%;color:var(--ep-ink)}
 .pocket-app.ep-workspace[data-theme=carbon] :is(.ep-reminder-chips button,.ep-category-toggle button,.ep-steps button){
  background:#fff;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)
 }

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {preselectPacketFiles} from '../src/renewal-preselection.ts';
+const reqs=[['registration','Vehicles'],['civ','Vehicles'],['identity','Personal'],['policy','Vehicles'],['payment','Personal'],['extra','Vehicles']].map(([id,category])=>({id,category,label:id,hint:'',terms:[]}));
+const file=(id,title,category,vehicleId,parent=id,kind)=>({title,category,vehicleId,kind,file:{id,name:id+'.pdf',document_id:null,vault_document_id:parent,storage_key:id,mime_type:'application/pdf',size_bytes:1}});
+const blank=()=>({values:{},assignments:{},originals:[]});
+const context={documentId:'current',vehicleId:'car-a',code:'RCA'};
+const candidates=[file('front','Talon','Vehicles','car-a','talon'),file('back','Talon','Vehicles','car-a','talon'),file('civ','Carte de identitate a vehiculului (CIV)','Vehicles','car-a'),file('identity','Carte de identitate','Personal'),file('foreign','Talon','Vehicles','car-b'),file('raw','Talon','Photos'),file('payment','Dovada plății','Personal'),{...file('policy','Asigurare RCA','Vehicles','car-a'),documentId:'current',file:{...file('policy','Asigurare RCA','Vehicles','car-a').file,document_id:'current',vault_document_id:null}},file('old-policy','Asigurare RCA','Vehicles','car-a')];
+const result=preselectPacketFiles(blank(),reqs,candidates,context);
+assert.deepEqual(result.assignments.registration,['front','back']);assert.deepEqual(result.assignments.civ,['civ']);assert.deepEqual(result.assignments.identity,['identity']);assert.deepEqual(result.assignments.policy,['policy']);assert(!Object.hasOwn(result.assignments,'payment'));assert(!Object.hasOwn(result.assignments,'extra'));
+const saved=blank();saved.assignments.registration=[];saved.assignments.civ=['custom'];saved.originals=['identity'];const restored=preselectPacketFiles(saved,reqs,candidates,context);assert.deepEqual(restored.assignments.registration,[]);assert.deepEqual(restored.assignments.civ,['custom']);assert(!Object.hasOwn(restored.assignments,'identity'));assert.deepEqual(saved.assignments,{registration:[],civ:['custom']});
+assert(!Object.hasOwn(preselectPacketFiles(blank(),reqs,[...candidates,file('second','Talon','Vehicles','car-a')],context).assignments,'registration'));
+assert(!Object.hasOwn(preselectPacketFiles(blank(),reqs,candidates,{...context,vehicleId:undefined}).assignments,'registration'));
+assert(!Object.hasOwn(preselectPacketFiles(blank(),reqs,[file('misnamed','Talon','Vehicles','car-a','parent','CAS')],context).assignments,'registration'));
+assert.deepEqual(preselectPacketFiles(blank(),reqs,[file('typed','Mașina mea','Vehicles','car-a','parent','TALON')],context).assignments.registration,['typed']);
+const fallback=file('scan','Document','Vehicles','car-a');fallback.file.name='talon-fata.png';assert.deepEqual(preselectPacketFiles(blank(),reqs,[fallback],context).assignments.registration,['scan']);
+console.log('PASS: matching vehicle/type preselection, multi-page documents, identity/CIV separation, current policy preference; saved deselections/originals respected; ambiguous and unassigned files excluded.');

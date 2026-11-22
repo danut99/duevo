@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs && node scripts/check-wallet-profiles.mjs && node scripts/check-vehicles.mjs && node scripts/check-document-vault.mjs",
+    "test": "node scripts/check-reminders.mjs && node scripts/check-database.mjs && node scripts/check-wallet-profiles.mjs && node scripts/check-vehicles.mjs && node scripts/check-document-vault.mjs && node scripts/check-push-session.mjs && node scripts/check-push-account-switch.mjs",
     "test:browser": "node scripts/check-functionalities.cjs && node scripts/check-usability.cjs && node scripts/check-photo-folder.cjs",
     "push:keys": "node scripts/generate-push-config.mjs",
     "test:vault": "node scripts/check-document-vault.mjs",

@@ -35,11 +35,14 @@ export async function enablePush(publicKey:string,hours:number[]){
  // Invoked from a click, before awaiting registration or network requests.
  const permission=await Notification.requestPermission();if(permission!=='granted')throw Error(tr("Nu ai permis notificările. Poți activa mai târziu."));
  if(!supabase)throw Error(tr("Intră din nou în cont."));
+ const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)throw Error(tr("Intră din nou în cont."));
  await navigator.serviceWorker.register('/sw.js');const registration=await navigator.serviceWorker.ready;
  let sub=await registration.pushManager.getSubscription();const expected=keyBytes(publicKey);
+ // Logout preserves the subscription. RLS hides another account's row, so
+ // rotate its browser subscription instead of trying to change its owner.
+ if(sub){const {data:owned,error}=await supabase.from('push_subscriptions').select('user_id').eq('endpoint',sub.endpoint).eq('user_id',user.id).maybeSingle();if(error)throw error;if(!owned){const removed=await sub.unsubscribe();if(!removed)throw Error(tr("Browserul nu a oprit abonamentul. Încearcă din nou."));sub=null}}
  if(sub){const existing=sub.options.applicationServerKey;if(existing&&(existing.byteLength!==expected.byteLength||new Uint8Array(existing).some((byte,i)=>byte!==expected[i]))){await disablePush();sub=null}}
  const created=!sub;sub=sub||await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:expected});
- const {data:{user}}=await supabase.auth.getUser();if(!user){if(created)await sub.unsubscribe();throw Error(tr("Intră din nou în cont."))}
  const details=sub.toJSON();const {error}=await supabase.from('push_subscriptions').upsert({user_id:user.id,endpoint:sub.endpoint,p256dh:details.keys?.p256dh,auth:details.keys?.auth,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Bucharest',hour:selected[0],hours:selected,enabled:true},{onConflict:'endpoint'});
  if(error){if(created)await sub.unsubscribe();throw Error(tr("Nu am putut salva dispozitivul. Verifică serviciul de notificări și încearcă din nou."))}return sub;
 }

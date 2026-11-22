@@ -7,6 +7,7 @@ import {supabase,getAuthSettings} from './supabase';
 import Dashboard from './Dashboard';
 import Landing from './PocketWelcome';
 import {disablePush} from './push';
+import './auth.css';
 
 function GoogleIcon(){
   return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.36Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.23-2.51c-.9.6-2.05.96-3.39.96-2.61 0-4.82-1.76-5.61-4.12H3.05v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.39 13.92A6 6 0 0 1 6.08 12c0-.67.11-1.31.31-1.92V7.49H3.05A10 10 0 0 0 2 12c0 1.61.38 3.14 1.05 4.51l3.34-2.59Z"/><path fill="#EA4335" d="M12 5.96c1.47 0 2.79.51 3.82 1.51l2.87-2.87A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.95 5.49l3.34 2.59C7.18 7.72 9.39 5.96 12 5.96Z"/></svg>;
@@ -93,20 +94,21 @@ export default function App(){
     onSignOut={()=>{void (async()=>{try{await disablePush()}catch{}await supabase?.auth.signOut();window.location.assign('/')})()}}
   />;
 
-  return <div className="pocket-app ep-auth" data-theme={authTheme}><div className="auth-shell"><section className="auth-card">
+  return <div className="pocket-app ep-auth" data-theme={authTheme}><div className="auth-shell"><section className="auth-card auth-entry">
     <button className="ep-icon-button ep-theme-button ep-auth-theme" aria-label="Schimbă tema" title="Schimbă tema" onClick={()=>{const next=authTheme==='obsidian'?'carbon':'obsidian';setAuthTheme(next);try{localStorage.setItem('expiry-pocket-theme',next)}catch{}}}><Palette size={17}/></button>
     <a className="brand" href="/"><span className="brandmark"><BrandMark size={32}/></span>
       <span className="duevo-wordmark">Duevo<small>MAI PUȚINE GRIJI, ZI DE ZI</small></span>
     </a>
-    <p className="eyebrow">ACTELE TALE, MAI UȘOR DE URMĂRIT</p>
     <h1>{signup?'Creează un cont.':'Bine ai venit.'}</h1>
-    <p>Păstrează actele și datele de expirare într-un singur loc. Pe telefon sau calculator.</p>
+    <p className="auth-intro">Actele tale, la îndemână pe orice dispozitiv.</p>
     {!supabase?<div className="error">Conectarea nu este disponibilă momentan. Încearcă mai târziu.</div>:<>
       <button className="google-signin" type="button" onClick={googleSignIn} disabled={busy!==null}>
         {busy==='google'?<LoaderCircle className="spin" size={20}/>:<GoogleIcon/>}
         {busy==='google'?'Se conectează la Google…':'Continuă cu Google'}
       </button>
-      <div className="auth-divider"><span>sau folosește emailul</span></div>
+      <p className="auth-google-note">{signup?'Contul Duevo se creează cu Google, fără o parolă nouă.':'Ai folosit Google? Alege același cont pentru a-ți regăsi actele.'}</p>
+      <details className="auth-email">
+      <summary>{signup?'Creează cont cu email':'Intră cu email și parolă'}</summary>
       <form onSubmit={submit}>
         <label>Adresa de email<input autoComplete="email" name="email" type="email" placeholder="nume@exemplu.ro" required disabled={busy!==null}/></label>
         <label>Parola<input autoComplete={signup?'new-password':'current-password'} name="password" type="password" minLength={signup?8:undefined} placeholder={signup?'Cel puțin 8 caractere':'Parola ta'} required disabled={busy!==null}/></label>
@@ -115,11 +117,10 @@ export default function App(){
           {busy==='email'?'Te rugăm să aștepți…':signup?'Creează cont cu email':'Intră în cont cu email'}
         </button>
       </form>{!signup&&<a className="text-button" href="/forgot-password">Ai uitat parola?</a>}
+      </details>
     </>}
     {error&&<div className="error" role="alert">{error}</div>}
-    <a className="text-button" href={signup?'/login':'/register'}>
-      {signup?'Ai deja un cont? Intră în cont':'Nu ai cont? Creează un cont cu email'}
-    </a>
+    <p className="auth-switch">{signup?'Ai deja cont?':'Ești nou aici?'} <a href={signup?'/login':'/register'}>{signup?'Intră în cont':'Creează cont'}</a></p>
   </section></div></div>;
 }
 

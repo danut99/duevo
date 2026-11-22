@@ -55,6 +55,8 @@ Browser workflow fixtures can be run with `npm run test:browser` against a local
 
 ## Build
 
+Email expiry reminders using Gmail are implemented with account opt-in, a confirmed-account recipient, a leased delivery queue, retries and a separate cron job. Deployment and secret configuration are documented in [supabase/EMAIL_SETUP.md](supabase/EMAIL_SETUP.md). Run `node scripts/check-email.mjs` for the isolated database checks. These email changes have not been deployed by this checkout.
+
 ```sh
 npm run build
 npm run preview

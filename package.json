@@ -11,6 +11,7 @@
     "test:browser": "node scripts/check-functionalities.cjs && node scripts/check-usability.cjs && node scripts/check-photo-folder.cjs",
     "push:keys": "node scripts/generate-push-config.mjs",
     "test:vault": "node scripts/check-document-vault.mjs",
+    "test:email": "node scripts/check-email.mjs",
     "test:renewal": "node scripts/check-renewal-packets.mjs && node scripts/check-contextual-files.mjs && node --experimental-strip-types scripts/check-renewal-pdf.mjs && node --experimental-strip-types scripts/check-renewal-preselection.mjs"
   },
   "dependencies": {

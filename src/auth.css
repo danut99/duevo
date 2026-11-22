@@ -1,0 +1,26 @@
+.pocket-app.ep-auth .auth-shell:has(.auth-entry){padding: max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.pocket-app.ep-auth .auth-entry{padding:24px;max-width:400px;margin:auto}
+.pocket-app.ep-auth .auth-entry .brand{margin-bottom:22px;padding-right:12px}
+.pocket-app.ep-auth .auth-entry h1{margin:0;font-size:26px;line-height:1.2}
+.pocket-app.ep-auth .auth-entry .auth-intro{margin:8px 0 20px;font-size:14px;line-height:1.5}
+.pocket-app.ep-auth .auth-entry .google-signin{position:relative;isolation:isolate;overflow:hidden;margin:0;min-height:58px;padding:8px 16px 8px 8px;background:#18181c;color:#f4f4f5;border:1px solid #37313a;border-radius:16px;font-size:16px;font-weight:650;box-shadow:0 4px 20px #0002}
+.pocket-app.ep-auth .auth-entry .google-signin>svg{box-sizing:content-box;flex:none;padding:10px;background:#fff;border-radius:12px;box-shadow:0 0 20px #ff5d1f35}
+.pocket-app.ep-auth .auth-entry .google-signin::before{content:'';position:absolute;z-index:-1;top:-60%;bottom:-60%;left:-45%;width:40%;background:linear-gradient(100deg,transparent,#ff5d1f10,#ff5d1f55,transparent);filter:blur(9px);transform:skewX(-18deg);animation:ep-orange-sweep 4.5s ease-in-out infinite;pointer-events:none}
+.pocket-app.ep-auth .auth-entry .google-signin:hover:not(:disabled){background:#1d1d22;border-color:#ff5d1f66}
+.pocket-app.ep-auth .auth-entry .google-signin:hover::before{animation-duration:1.8s}
+.pocket-app.ep-auth .auth-entry .google-signin:disabled::before{animation-play-state:paused}
+.pocket-app.ep-auth[data-theme=carbon] .auth-entry .google-signin{background:#18181c;color:#fff;border:2px solid #0a0a0a}
+@media(prefers-reduced-motion:reduce){.pocket-app.ep-auth .auth-entry .google-signin::before{animation:none;left:0;opacity:.35}}
+.pocket-app.ep-auth .auth-entry .auth-google-note{margin:10px 0 18px;font-size:13px;line-height:1.5;text-align:center}
+.pocket-app.ep-auth .auth-entry .auth-email{border-block:1px solid var(--ep-border)}
+.pocket-app.ep-auth .auth-entry .auth-email summary{display:list-item;cursor:pointer;padding:13px 4px;font-size:14px;font-weight:600;color:var(--ep-sub);min-height:44px}
+.pocket-app.ep-auth .auth-entry form{margin:2px 0 0;gap:12px}
+.pocket-app.ep-auth .auth-entry label{gap:6px;font-size:14px}
+.pocket-app.ep-auth .auth-entry input{font-size:16px;min-height:44px;padding:10px 12px;border-radius:10px}
+.pocket-app.ep-auth .auth-entry .email-signin{font-size:14px;min-height:44px;padding:10px 12px;margin-bottom:12px}
+.pocket-app.ep-auth .auth-entry .auth-email .text-button{margin:0 0 10px;padding:6px 0;min-height:36px;font-size:14px}
+.pocket-app.ep-auth .auth-entry .auth-switch{margin:16px 0 0;text-align:center;font-size:14px;line-height:1.5}
+.auth-entry .auth-switch a{display:inline-block;padding:8px 2px;color:#ff8b54;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.pocket-app.ep-auth[data-theme=carbon] .auth-entry .auth-switch a{color:#a8320a}
+.pocket-app.ep-auth .auth-entry .error{margin-top:12px;font-size:14px}
+@media(max-height:700px){.pocket-app.ep-auth .auth-entry{padding:18px 20px}.pocket-app.ep-auth .auth-entry .brand{margin-bottom:14px}.pocket-app.ep-auth .auth-entry .auth-intro{margin-bottom:14px}.pocket-app.ep-auth .auth-entry .auth-google-note{margin-bottom:12px}.pocket-app.ep-auth .auth-entry .auth-switch{margin-top:8px}}

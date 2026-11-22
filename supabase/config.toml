@@ -2,3 +2,7 @@
 [functions.push]
 # JWT is verified explicitly using auth.getUser(); cron uses a distinct secret.
 verify_jwt = false
+
+[functions.email]
+# User JWTs are checked explicitly; dispatch requires EMAIL_CRON_SECRET.
+verify_jwt = false

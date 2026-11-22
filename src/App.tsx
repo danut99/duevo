@@ -1,10 +1,12 @@
+import Contact from './Contact';
 import AppPreloader from './AppPreloader';
 import {LanguageButton,useLocalePreference} from './LanguagePicker';
 import {getLanguage,getCountry} from './i18n.ts';
 import {tr,locale} from './i18n.ts';
 import PasswordRecovery from './PasswordRecovery';
 import BrandMark from './BrandMark';
-import {useEffect,useState} from 'react';
+import {lazy,Suspense,useEffect,useState} from 'react';
+import {isCreatorAccount} from './creator-access';
 import type {Session} from '@supabase/supabase-js';
 import {ShieldCheck,LoaderCircle,Palette} from 'lucide-react';
 import {supabase,getAuthSettings} from './supabase';
@@ -12,6 +14,7 @@ import Dashboard from './Dashboard';
 import Landing from './PocketWelcome';
 import {disablePush,restorePush,suspendPush} from './push';
 import './auth.css';
+const Creator=lazy(()=>import('./Creator'));
 
 function GoogleIcon(){
   return <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.36Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.23-2.51c-.9.6-2.05.96-3.39.96-2.61 0-4.82-1.76-5.61-4.12H3.05v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.39 13.92A6 6 0 0 1 6.08 12c0-.67.11-1.31.31-1.92V7.49H3.05A10 10 0 0 0 2 12c0 1.61.38 3.14 1.05 4.51l3.34-2.59Z"/><path fill="#EA4335" d="M12 5.96c1.47 0 2.79.51 3.82 1.51l2.87-2.87A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.95 5.49l3.34 2.59C7.18 7.72 9.39 5.96 12 5.96Z"/></svg>;
@@ -28,6 +31,16 @@ export default function App(){
   const isAuth=signup||window.location.pathname==='/login';
   const [busy,setBusy]=useState<'google'|'email'|null>(null);
   const [error,setError]=useState('');
+  const [creatorAccess,setCreatorAccess]=useState<{id:string;allowed:boolean}|null>(null);
+  useEffect(()=>{
+    if(!session){setCreatorAccess(null);return;}
+    const id=session.user.id;
+    if(!isCreatorAccount(session.user)){setCreatorAccess({id,allowed:false});return;}
+    let current=true;
+    void supabase?.auth.getUser().then(({data,error})=>{if(current)setCreatorAccess({id,allowed:!error&&data.user?.id===id&&isCreatorAccount(data.user)});}).catch(()=>{if(current)setCreatorAccess({id,allowed:false});});
+    return()=>{current=false;};
+  },[session?.user.id,session?.user.email,session?.user.email_confirmed_at]);
+  const canCreate=!!session&&creatorAccess?.id===session.user.id&&creatorAccess.allowed;
   useEffect(()=>{if(session&&(session.user.user_metadata?.duevo_language!==getLanguage()||session.user.user_metadata?.duevo_country!==getCountry()))void supabase?.auth.updateUser({data:{duevo_language:getLanguage(),duevo_country:getCountry()}}).catch(()=>{});},[session?.user.id,localePreference]);
 
   useEffect(()=>{if(session)void restorePush().catch(()=>{});},[session?.user.id]);
@@ -92,11 +105,18 @@ export default function App(){
 
   if(!ready)return <AppPreloader theme={authTheme}/>;
   if(recovering||location.pathname==='/forgot-password')return <PasswordRecovery reset={recovering} hasSession={!!session} theme={authTheme}/>;
-  if(isLanding)return <Landing signedIn={!!session}/>;
-  if(ready&&session&&isAuth){const next=new URLSearchParams(location.search).get('next');window.location.replace(next&&(next==='/app'||next==='/overview'||next==='/reminders'||next==='/documents'||next.startsWith('/documents/'))?next:'/documents');return null;} 
+  if(location.pathname==='/contact')return <Contact signedIn={!!session}/>;
+  if(isLanding)return <Landing signedIn={!!session} onGoogleSignIn={()=>void googleSignIn()} googleBusy={busy==='google'} authError={error}/>;
+  if(ready&&session&&isAuth){const next=new URLSearchParams(location.search).get('next');window.location.replace(next&&(next==='/app'||next==='/overview'||next==='/reminders'||next==='/documents'||next==='/creator'||next.startsWith('/documents/'))?next:'/documents');return null;}
   if(ready&&!session&&!isAuth){window.location.replace('/login?next='+encodeURIComponent(window.location.pathname+window.location.search));return null;}
 
+  if(session&&location.pathname==='/creator'){
+    if(!creatorAccess||creatorAccess.id!==session.user.id)return <AppPreloader theme={authTheme}/>;
+    if(!canCreate)return <div className="pocket-app ep-auth" data-theme={authTheme}><section className="auth-card"><h1>{tr('Pagina Creator nu este disponibilă pentru acest cont.')}</h1><a className="text-button" href="/documents">{tr('Înapoi la actele mele')}</a></section></div>;
+    return <Suspense fallback={<AppPreloader theme={authTheme}/>}><Creator key={session.user.id} userId={session.user.id}/></Suspense>;
+  }
   if(session)return <Dashboard
+    canCreate={canCreate}
     avatarUrl={session.user.user_metadata?.avatar_url||session.user.user_metadata?.picture}
     displayName={session.user.user_metadata?.full_name||session.user.email?.split('@')[0]||'there'}
     onSignOut={()=>{void (async()=>{try{await suspendPush()}catch{await disablePush()}await supabase?.auth.signOut();window.location.assign('/')})()}}

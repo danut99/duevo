@@ -32,3 +32,12 @@
 .pocket-app.ep-welcome .ep-everywhere .ep-intro-calendar-note{background:transparent;border-top-color:#ff5d1f24}
 .pocket-app.ep-welcome[data-theme=carbon] .ep-everywhere-content{background:linear-gradient(110deg,#fff0e5,#fff 65%);border-color:#0a0a0a}
 .pocket-app.ep-welcome[data-theme=carbon] .ep-everywhere .ep-intro-calendar-note{border-top-color:#d4d4d8}
+.pocket-app .ep-everywhere{container-type:inline-size}
+.ep-everywhere .ep-store-buttons{min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ep-everywhere .ep-store-buttons button{display:grid;grid-template-columns:22px minmax(0,1fr) 16px;gap:10px;align-items:center;min-width:0;padding:12px;min-height:64px}
+.ep-everywhere .ep-store-buttons button>svg{width:20px;height:20px;flex:none}
+.ep-everywhere .ep-store-buttons button>svg:last-child{width:16px;height:16px}
+.ep-everywhere .ep-store-buttons strong{font-size:13px;line-height:1.35}
+.ep-everywhere .ep-store-buttons small{font-size:10px;line-height:1.4}
+@container(max-width:680px){.pocket-app.ep-welcome .ep-everywhere .ep-download{grid-template-columns:minmax(0,1fr);gap:18px}.ep-everywhere .ep-download-heading>div{flex:1;min-width:0}.ep-everywhere .ep-store-buttons{margin:0}}
+@container(max-width:350px){.ep-everywhere .ep-store-buttons button{grid-template-columns:20px minmax(0,1fr);padding:10px;gap:8px}.ep-everywhere .ep-store-buttons button>svg:last-child{display:none}.ep-everywhere .ep-store-buttons strong{font-size:12px}}

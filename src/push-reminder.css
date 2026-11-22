@@ -1,0 +1,13 @@
+.pocket-app .ep-push-prompt{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;margin-bottom:16px;background:var(--ep-card);border:1px solid var(--ep-border);border-radius:14px}
+.pocket-app .ep-push-prompt-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:8px;background:#ff5d1f15;color:var(--ep-accent)}
+.pocket-app .ep-push-prompt>div{flex:1;min-width:0}
+.pocket-app .ep-push-prompt h2{font-size:14px;line-height:1.4;margin:2px 0 4px;color:var(--ep-text)}
+.pocket-app .ep-push-prompt p{font-size:12px;line-height:1.5;color:var(--ep-sub);margin:0;max-width:620px}
+.pocket-app .ep-push-prompt-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+.pocket-app .ep-push-prompt-actions :is(.ep-primary,.ep-secondary){width:auto;min-height:40px;margin:0;padding:8px 14px;font-size:12px;line-height:1.4;border-radius:10px;white-space:nowrap}
+.pocket-app .ep-push-prompt button:disabled{opacity:.5;cursor:not-allowed}
+.pocket-app .ep-push-prompt button:focus-visible{outline:2px solid var(--ep-accent);outline-offset:3px}
+.pocket-app .ep-push-prompt .ep-error{margin-top:10px;color:var(--ep-text)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-push-prompt{background:var(--ep-card);border:2px solid var(--ep-ink);box-shadow:var(--ep-shadow)}
+.pocket-app.ep-workspace[data-theme=carbon] .ep-push-prompt-icon{color:#aa370d}
+@media(max-width:599px){.pocket-app .ep-push-prompt{padding:12px;gap:8px}}

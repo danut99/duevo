@@ -1,0 +1,102 @@
+[
+  {
+    "id": "01-adauga-act",
+    "day": 1,
+    "title": "Adaugă primul act",
+    "description": "RCA-ul expiră. Întrebarea e: tu când afli? Adaugă termenul în Duevo și alege reamintirile. Tu ce act ai adăuga primul?",
+    "hashtags": "#RCA #ActeAuto #Soferi #CarTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "02-seteaza-notificari",
+    "day": 2,
+    "title": "Setează reamintirile",
+    "description": "„Țin eu minte” nu este o reamintire. În Duevo alegi zilele de alertă și configurezi notificările pe dispozitiv.",
+    "hashtags": "#Organizare #Productivitate #InvataPeTikTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "03-adauga-masina",
+    "day": 3,
+    "title": "Adaugă mașina",
+    "description": "Două mașini. Mai multe acte. O singură memorie? În Duevo adaugi mașina și îi grupezi actele. VIN-ul este opțional.",
+    "hashtags": "#Masini #Soferi #CarTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "04-dosare-auto-personal",
+    "day": 4,
+    "title": "Organizează Auto și Personal",
+    "description": "RCA-ul și buletinul n-au nevoie să stea în același haos. Dosare Auto și Personal, în același Duevo. Ce termen uiți cel mai des?",
+    "hashtags": "#Acte #Organizare #InvataPeTikTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "05-copii-documente",
+    "day": 5,
+    "title": "Păstrează copii și caută",
+    "description": "Ai poza talonului. Dar unde? În Duevo păstrezi copii cu nume clare și le găsești prin căutare. Copiile nu înlocuiesc actele originale.",
+    "hashtags": "#Documente #Organizare #InvataPeTikTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "06-ce-urmeaza",
+    "day": 6,
+    "title": "Vezi ce urmează",
+    "description": "Ce act îți expiră primul? În Duevo vezi termenele pe care le-ai salvat, într-o privire. Fără să deschizi fiecare PDF.",
+    "hashtags": "#ActeAuto #Rovinieta #Organizare #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "07-incepe-cu-un-act",
+    "day": 7,
+    "title": "Demonstrație rapidă",
+    "description": "Nu trebuie să organizezi totul azi. Începe cu un act: alegi tipul, completezi data și setezi reamintirile. Care e primul?",
+    "hashtags": "#RCA #ActeAuto #InvataPeTikTok #Duevo",
+    "seconds": 18,
+    "collection": "week",
+    "folder": "week-1"
+  },
+  {
+    "id": "funny-01-pdf-ul-nu-vorbeste",
+    "day": 1,
+    "title": "PDF-ul nu vorbește",
+    "description": "Eu: playlistul e gata. Rovinieta: am expirat deja. 😅 PDF-ul n-are voce. În Duevo adaugi termenul și alegi reamintirile.",
+    "hashtags": "#Rovinieta #Soferi #CarTok #Duevo",
+    "seconds": 12,
+    "collection": "funny",
+    "folder": "funny-1"
+  },
+  {
+    "id": "funny-02-tin-eu-minte",
+    "day": 2,
+    "title": "Memoria mea, campioană",
+    "description": "„Țin eu minte.” — eu, înainte să uit. 😅 Pentru RCA, ITP și celelalte termene, îmi setez reamintiri în Duevo. Cheile tot eu trebuie să le caut.",
+    "hashtags": "#RCA #ActeAuto #Soferi #Duevo",
+    "seconds": 12,
+    "collection": "funny",
+    "folder": "funny-1"
+  },
+  {
+    "id": "funny-03-creierul-in-concediu",
+    "day": 3,
+    "title": "Creierul e în concediu",
+    "description": "Două mașini. RCA, ITP, rovinietă. Creierul meu cere concediu. 🦊 În Duevo grupez actele pe mașini și salvez termenele.",
+    "hashtags": "#Masini #Soferi #CarTok #Duevo",
+    "seconds": 12,
+    "collection": "funny",
+    "folder": "funny-1"
+  }
+]

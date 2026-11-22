@@ -1,0 +1,20 @@
+[
+ {"day":1,"id":"funny-01-pdf-ul-nu-vorbeste","title":"PDF-ul nu vorbește","caption":"Eu: playlistul e gata. Rovinieta: am expirat deja. 😅 PDF-ul n-are voce. În Duevo adaugi termenul și alegi reamintirile. #Rovinieta #Soferi #CarTok #Duevo","shots":[
+  {"seconds":3,"headline":["Playlist? Gata.","Rovinieta? Ups."],"asset":"rovinieta-expirata","speech":"DJ la volan. Calendarul, pe pauză.","mode":"phone","label":"SCENETĂ CU DUEVO"},
+  {"seconds":3,"headline":["„De ce amendă?”","PDF-ul: „Eu nu vorbesc.”"],"asset":"rovinieta-expirata","speech":"PDF-ul n-are voce. Și nici milă.","mode":"focus","label":"UMOR · DATE DEMO"},
+  {"seconds":3,"headline":["Duevo are","reamintiri."],"asset":"alerte","speech":"Aici alegi când să-ți amintească.","mode":"focus","label":"ÎN DUEVO"},
+  {"seconds":3,"headline":["Pentru drumuri.","Nu surprize."],"asset":"rovinieta","speech":"Pune termenul în Duevo înainte de drum.","mode":"phone","label":"ÎNCEARCĂ DUEVO"}
+ ]},
+ {"day":2,"id":"funny-02-tin-eu-minte","title":"Memoria mea, campioană","caption":"„Țin eu minte.” — eu, înainte să uit. 😅 Pentru RCA, ITP și celelalte termene, îmi setez reamintiri în Duevo. Cheile tot eu trebuie să le caut. #RCA #ActeAuto #Soferi #Duevo","shots":[
+  {"seconds":3,"headline":["„Țin eu minte.”","Ultimele cuvinte celebre."],"asset":"rca-expirat","speech":"Memoria mea: multe promisiuni, puține date.","mode":"phone","label":"SCENETĂ CU DUEVO"},
+  {"seconds":3,"headline":["RCA-ul: expirat.","Eu: „Cum adică?!”"],"asset":"rca-expirat","speech":"Surpriză! Calendarul n-a stat după tine.","mode":"focus","label":"UMOR · DATE DEMO"},
+  {"seconds":3,"headline":["Telefonul ține minte.","Tu cauți cheile."],"asset":"alerte","speech":"Alege reamintirile. Cheile le cauți tu.","mode":"focus","label":"ÎN DUEVO"},
+  {"seconds":3,"headline":["Mai puțin „ups”.","Mai mult Duevo."],"asset":"rca","speech":"Începe cu primul tău act.","mode":"phone","label":"ÎNCEARCĂ DUEVO"}
+ ]},
+ {"day":3,"id":"funny-03-creierul-in-concediu","title":"Creierul e în concediu","caption":"Două mașini. RCA, ITP, rovinietă. Creierul meu cere concediu. 🦊 În Duevo grupez actele pe mașini și salvez termenele. #Masini #Soferi #CarTok #Duevo","shots":[
+  {"seconds":3,"headline":["Două mașini.","Creierul: concediu."],"asset":"masini","speech":"Două mașini. O singură memorie obosită.","mode":"phone","label":"SCENETĂ CU DUEVO"},
+  {"seconds":3,"headline":["RCA. ITP. Rovinietă.","Nu e test-grilă."],"asset":"dosare","speech":"Nu trebuie să memorezi toate termenele.","mode":"focus","label":"UMOR · DATE DEMO"},
+  {"seconds":3,"headline":["Fiecare mașină","cu actele ei."],"asset":"masina-formular","speech":"Adaugi mașina și îi grupezi actele.","mode":"focus","label":"ÎN DUEVO"},
+  {"seconds":3,"headline":["Concediu pentru creier.","Nu pentru acte."],"asset":"masini","speech":"Pune mașinile familiei în Duevo.","mode":"phone","label":"ÎNCEARCĂ DUEVO"}
+ ]}
+]

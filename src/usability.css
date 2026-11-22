@@ -26,6 +26,37 @@ body:has(.ep-document-overlay) #root .pocket-app *{animation-play-state:paused!i
 .ep-archive-note{padding:14px;border:1px solid var(--ep-border);border-radius:12px;color:var(--ep-sub)}
 .ep-search-field:focus-within{outline:2px solid #ff5d1f;outline-offset:2px}
 .ep-notification-settings .ep-hour{flex-wrap:wrap}
+.ep-hero-google-actions{width:100%;max-width:440px;margin-top:0;display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.pocket-app.ep-welcome .ep-hero-content>.ep-hero-google-actions{grid-column:1;align-self:start;margin:0}
+.pocket-app.ep-welcome .ep-hero-content:has(>.ep-hero-google-actions){row-gap:16px}
+.pocket-app .ep-hero-google-button{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:54px;padding:14px 20px;border:1px solid #dadce0;border-radius:14px;background:#fff;color:#1f1f1f;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px #0002}
+.ep-hero-google-button{position:relative;isolation:isolate;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.pocket-app .ep-hero-google-button:before{content:'';position:absolute;z-index:0;top:-60%;bottom:-60%;left:-45%;width:40%;background:linear-gradient(100deg,transparent,#ff5d1f10,#ff5d1f55,transparent);filter:blur(9px);transform:skewX(-18deg);animation:ep-orange-sweep 4.5s ease-in-out infinite;pointer-events:none}
+.pocket-app .ep-hero-google-button:hover:before{animation-duration:1.8s}
+.pocket-app .ep-hero-google-button:hover{transform:translateY(-2px)}
+.pocket-app .ep-hero-google-button{justify-content:flex-start;width:380px;max-width:100%;min-height:64px;padding:8px 16px 8px 8px;border-radius:999px;background:#18181c;color:#f4f4f5;border-color:#2a2a32;box-shadow:none}
+.ep-hero-google-button>.ep-google-icon{position:relative;z-index:1;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:white;box-shadow:0 0 24px #ff5d1f40;flex:none}
+.ep-hero-google-button>.ep-google-label{position:relative;z-index:1;flex:1;min-width:0;text-align:left}
+.ep-google-label strong{display:block;font-size:15px;font-weight:800;line-height:1.4}
+.ep-google-label small{display:block;margin-top:2px;font-size:12px;font-weight:500;line-height:1.4;color:#aeb0bb;font-family:monospace}
+.ep-google-chevron{position:relative;z-index:1;color:#85858f}
+.pocket-app[data-theme=carbon] .ep-google-label small{color:#595963}
+.ep-hero-google-button svg{flex:none}.ep-hero-google-button:disabled{opacity:.65;cursor:wait}
+.ep-hero-google-button:focus-visible,.ep-hero-email-link:focus-visible{outline:3px solid #ff7913;outline-offset:4px}
+.pocket-app .ep-hero-google-note{margin:10px 0 0;font-size:11px;color:var(--ep-sub);line-height:1.5;flex:none;min-width:0}
+.ep-hero-email-link{display:inline-flex;align-items:center;min-height:36px;margin-top:4px;font-size:12px;color:var(--ep-sub);text-decoration:underline;text-underline-offset:3px}
+.ep-hero-google-actions>.ep-error{width:100%}
+@media(prefers-reduced-motion:reduce){.pocket-app .ep-hero-google-button:before{animation:none;display:none}.ep-hero-google-button{transition:none}}
+.pocket-app[data-theme=carbon] .ep-hero-google-button{background:#fff;color:#181818;border:2px solid #181818;box-shadow:3px 3px 0 #181818}
+.ep-list-add-heading{flex-wrap:wrap;gap:10px}
+.ep-list-add-heading h2{margin-right:auto}
+.pocket-app.ep-workspace .ep-list-add-heading .ep-local-add{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:9px 13px;font-size:12px;white-space:nowrap}
+.ep-vehicle-group>summary>span{flex:1;min-width:0}
+.ep-vehicle-group>summary>svg{flex:none}
+.pocket-app.ep-workspace .ep-vehicle-group>summary>.ep-vehicle-add-act{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;min-height:40px;padding:8px 11px;margin-left:auto;border:1px solid var(--ep-border);border-radius:10px;background:var(--ep-inner);color:var(--ep-text);font-size:12px;font-weight:700;white-space:nowrap;box-shadow:none}
+.ep-vehicle-add-act svg{color:var(--ep-accent,#ff5d1f)}
+.ep-vehicle-add-act:hover{border-color:var(--ep-accent,#ff5d1f)!important}
+@media(max-width:380px){.ep-vehicle-group>summary{gap:8px}.pocket-app.ep-workspace .ep-vehicle-group>summary>.ep-vehicle-add-act{padding:8px;font-size:11px;gap:4px}}
 @media(min-width:700px){
  .pocket-app .ep-install-modal{max-width:720px;padding:24px 28px}
  .ep-install-modal .ep-install-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;margin-top:18px}

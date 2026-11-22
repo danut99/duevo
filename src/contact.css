@@ -1,0 +1,46 @@
+
+.pocket-app.du-contact{padding-bottom:0}
+.pocket-app.du-contact main{padding:0;margin:0;max-width:none}
+.du-contact-shell{position:relative;z-index:1;width:min(760px,100%);margin:auto;padding:20px 24px}
+.du-contact-header,.du-contact-header>div,.du-contact-brand{display:flex;align-items:center;gap:12px}
+.du-contact-header{justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--ep-border)}
+.du-contact-brand{font-size:23px;color:var(--ep-text);text-decoration:none}
+.du-contact-back{display:inline-block;color:var(--ep-sub);font-size:14px;margin-top:16px;text-underline-offset:4px}
+.pocket-app.du-contact .du-contact-intro{display:flex;align-items:center;text-align:left;gap:18px;margin:20px 0;padding:0}
+.du-contact-avatar{position:relative;display:grid;place-items:center;flex:none;width:64px;height:64px;border-radius:19px;background:var(--ep-card);border:1px solid var(--ep-border)}
+.du-contact-avatar>.duevo-mark{width:40px;height:40px}
+.du-contact-avatar>span{position:absolute;right:-4px;bottom:-4px;display:grid;place-items:center;width:24px;height:24px;background:var(--ep-accent);color:#fff;border:3px solid var(--ep-bg);border-radius:50%}
+.du-contact-avatar>span svg{width:13px;height:13px}
+.du-contact-intro h1{font-size:28px;letter-spacing:-.8px;line-height:1.2;margin:0 0 6px;color:var(--ep-text)}
+.du-contact-intro p{font-size:15px;line-height:1.5;color:var(--ep-sub)}
+.du-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.du-contact-card{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:20px;border:1px solid var(--ep-border);border-radius:16px;background:var(--ep-card)}
+.du-contact-row{display:flex;align-items:center;gap:12px;min-width:0;margin-bottom:18px}
+.du-contact-row>div{min-width:0}
+.du-contact-icon{display:grid;place-items:center;flex:none;width:38px;height:38px;background:#ff5d1f15;color:var(--ep-accent);border-radius:11px}
+.du-contact-card h2{font-size:14px;line-height:1.4;font-weight:500;color:var(--ep-sub);margin:0 0 3px}
+.du-contact-email,.du-contact-handle{font-size:16px;line-height:1.5;font-weight:700;color:var(--ep-text);overflow-wrap:anywhere;text-decoration:none}
+.du-contact-email:hover{text-decoration:underline;text-underline-offset:4px}
+.du-contact-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.pocket-app.du-contact .du-contact-description{font-size:14px;line-height:1.5;color:var(--ep-sub);margin:0 0 14px}
+.du-contact :is(a.ep-primary,a.ep-secondary,button.ep-secondary){display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;min-height:44px;padding:10px 13px;font-size:14px;border-radius:10px}
+.du-contact-card .du-contact-copy-status{font-size:13px;line-height:1.5;color:var(--ep-sub);margin:10px 0 0}
+.du-contact-social>.ep-secondary{margin-top:auto}
+.du-contact-help{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1px solid var(--ep-border);border-radius:14px;margin-top:14px;background:var(--ep-card)}
+.du-contact-help>svg{flex-shrink:0;color:var(--ep-accent)}
+.du-contact-help h2{flex:1;font-size:14px;line-height:1.4;color:var(--ep-text)}
+.du-contact-privacy{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.6;color:var(--ep-sub)}
+.du-contact-privacy svg{flex-shrink:0;margin-top:2px}
+.du-contact-footer{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--ep-border);padding:16px 0 0;font-size:12px;color:var(--ep-sub)}
+.du-contact-footer a{color:var(--ep-text);text-underline-offset:4px}
+.du-contact a:focus-visible,.du-contact button:focus-visible{outline:2px solid var(--ep-accent);outline-offset:4px}
+.pocket-app.du-contact .ep-secondary{background:var(--ep-inner);color:var(--ep-text);border:1px solid var(--ep-border);box-shadow:none}
+.pocket-app.du-contact .ep-secondary:hover{background:var(--ep-card);border-color:var(--ep-accent)}
+.pocket-app.du-contact .du-contact-privacy{margin:16px 0 22px}
+.pocket-app.du-contact[data-theme=carbon] .ep-secondary{background:#fff;color:var(--ep-ink);border:2px solid var(--ep-ink);box-shadow:var(--ep-control-shadow)}
+.pocket-app.du-contact[data-theme=carbon] :is(.du-contact-card,.du-contact-avatar,.du-contact-help){border:2px solid var(--ep-ink);box-shadow:var(--ep-shadow)}
+.pocket-app.du-contact[data-theme=carbon] .du-contact-eyebrow{color:#a8320a!important}
+.du-welcome-footer{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--ep-border);margin-top:28px;padding:22px 0;font-size:14px;color:var(--ep-sub)}
+.du-welcome-footer a{color:var(--ep-text);text-underline-offset:4px}
+
+@media(max-width:650px){.du-contact-shell{padding:16px}.du-contact-intro{gap:14px;margin:20px 0}.du-contact-intro h1{font-size:24px}.du-contact-intro p{font-size:14px}.du-contact-avatar{width:54px;height:54px;border-radius:16px}.du-contact-avatar>.duevo-mark{width:34px;height:34px}.du-contact-grid{grid-template-columns:1fr;gap:12px}.du-contact-card{padding:16px}.du-contact-social{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px 10px}.du-contact-social .du-contact-description{grid-column:1/-1;grid-row:2;margin-bottom:0}.du-contact-social>.ep-secondary{grid-column:2;grid-row:1}.du-contact-social .du-contact-row{margin:0}.du-contact-social>.ep-secondary{margin:0;font-size:12px;padding:10px}.du-contact-help{flex-wrap:wrap;padding:12px}.du-contact-help h2{min-width:100px}.du-contact-help>.ep-secondary{font-size:12px;padding:9px}.du-welcome-footer{flex-wrap:wrap}}

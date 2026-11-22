@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createContext,runInContext} from 'node:vm';
 import ts from 'typescript';
-const load=async path=>import('data:text/javascript;base64,'+Buffer.from(ts.transpileModule(readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText).toString('base64'));
+import {sourceModule} from './source-module.mjs';
+const load=async path=>import(sourceModule(readFileSync(path,'utf8')));
 const {dateOnly,calendarFile,normalizeReminders}=await load('src/reminder-utils.ts');
 assert(dateOnly('2028-02-29'));assert(!dateOnly('2027-02-29'));assert(!dateOnly('2026-13-01'));
 assert.deepEqual(normalizeReminders([7,7,0,30,2]),[30,7,0]);
@@ -17,6 +18,8 @@ assert(term.includes('DTSTART;VALUE=DATE:20261202'));assert(term.includes('DTEND
 const {allowedEndpoint,notificationPayload,responseCode}=await load('supabase/functions/push/logic.ts');
 assert(allowedEndpoint('https://fcm.googleapis.com/fcm/send/a'));assert(allowedEndpoint('https://web.push.apple.com/token'));assert(!allowedEndpoint('http://fcm.googleapis.com/a'));assert(!allowedEndpoint('https://fcm.googleapis.com.evil.test/a'));assert(!allowedEndpoint('https://fcm.googleapis.com:444/a'));assert(!allowedEndpoint('https://user:pass@fcm.googleapis.com/a'));assert(!allowedEndpoint('https://127.0.0.1/a'));
 assert.equal(responseCode({statusCode:410}),410);assert.equal(responseCode(new Error('sensitive message')),503);assert(!JSON.stringify(notificationPayload('id',2,7)).includes('RCA'));
+assert.equal(notificationPayload('id',2,1,'Ștefan','Poliță RCA','document','en').body,'Profile Ștefan: Poliță RCA expires in 1 day.');
+assert(notificationPayload('id',2,-15,undefined,'Dentist','other','en').body.includes('15 minutes before'));
 const handlers={},shown=[],navigated=[];let pending;
 const context=createContext({URL,self:{location:{origin:'https://example.test'},addEventListener:(name,handler)=>handlers[name]=handler,skipWaiting:()=>{},registration:{showNotification:async(...args)=>shown.push(args)},clients:{claim:async()=>{},matchAll:async()=>[],openWindow:async url=>navigated.push(url)}}});
 runInContext(readFileSync('public/sw.js','utf8').replace(/^\uFEFF/,''),context);

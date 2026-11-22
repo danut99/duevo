@@ -14,11 +14,12 @@ let docs=[
 ];
 let recover=0,updates=0;const errors=[];
 async function fixture(page,signedIn=true){
+ await page.addInitScript(()=>{localStorage.setItem('duevo-language','ro');localStorage.setItem('duevo-country','RO')});
  page.on('pageerror',e=>errors.push(e.message));
  if(signedIn)await page.addInitScript(({key,session})=>localStorage.setItem(key,JSON.stringify(session)),{key:`sb-${ref}-auth-token`,session:{access_token:jwt(),refresh_token:'fixture',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user}});
  await page.route(origin+'/**',async route=>{
   const req=route.request(),url=new URL(req.url());const body=req.postData()?req.postDataJSON():null;let data=[];
-  if(url.pathname==='/auth/v1/user'){data=user;if(req.method()==='PUT'){assert.equal(body.password,'NewPassword123!');updates++}}
+  if(url.pathname==='/auth/v1/user'){data=user;if(req.method()==='PUT'){if(body.password){assert.equal(body.password,'NewPassword123!');updates++}else{assert.equal(body.data.duevo_language,'ro');assert.equal(body.data.duevo_country,'RO')}}}
   else if(url.pathname==='/auth/v1/recover'){assert.equal(body.email,'fixture@example.test');assert(url.searchParams.get('redirect_to').endsWith('/reset-password'));recover++;data={}}
   else if(url.pathname==='/functions/v1/push')data={configured:false,publicKey:null,scheduleReady:false,lastRun:null};
   else if(url.pathname==='/rest/v1/rpc/ensure_wallet_profile')data=pid;
@@ -66,9 +67,9 @@ async function fixture(page,signedIn=true){
  await page.goto(base+'/documents/'+docs[0].id+'/edit');await page.getByLabel('Mașina',{exact:true}).waitFor();assert.equal(await page.locator('#inp-vehicle').count(),0);
  await page.getByLabel('Mașina',{exact:true}).selectOption('');await page.locator('#inp-vehicle').fill('B 999 NEW');await page.getByLabel('Mașina',{exact:true}).selectOption(vid);assert.equal(await page.locator('#inp-vehicle').count(),0);
  await page.getByRole('button',{name:'Salvează modificările',exact:true}).click();await page.getByRole('dialog').waitFor();assert.equal(docs[0].reference,'B 123 ABC • POL-42');
- await page.goto(base+'/reminders');await page.locator('.ep-alert-document').first().waitFor();assert.equal(await page.locator('.ep-alert-document').count(),2);assert.equal(await page.locator('details.ep-tools').count(),0);await page.locator('.ep-push-details>summary').click();await page.getByRole('button',{name:'Adaugă o oră',exact:true}).waitFor();
+ await page.goto(base+'/reminders');await page.locator('.ep-alert-document').first().waitFor();assert.equal(await page.locator('.ep-alert-document').count(),2);assert.equal(await page.locator('details.ep-tools').count(),0);await page.getByText('Detalii notific\u0103ri',{exact:true}).click();await page.getByRole('button',{name:'+ Adaugă',exact:true}).waitFor();
  await page.getByRole('button',{name:'Marchează reînnoit',exact:true}).click();assert.equal(docs[0].expires,date(-3));await page.getByLabel('Noua dată de expirare').fill(date(365));await page.getByRole('button',{name:'Confirmă reînnoirea',exact:true}).click();await page.locator('#alert-renew-date').waitFor({state:'detached'});assert.equal(docs[0].expires,date(365));
- await page.getByRole('button',{name:'Adaugă o oră',exact:true}).click();assert.equal(await page.locator('.ep-hours select').count(),2);await page.locator('.ep-hours select').nth(1).selectOption('18');assert.equal(await page.locator('.ep-hours select').nth(1).inputValue(),'18');
+ await page.getByRole('button',{name:'+ Adaugă',exact:true}).click();assert.equal(await page.locator('.ep-delivery-channel[aria-labelledby=push-channel-title] select').count(),2);await page.locator('.ep-delivery-channel[aria-labelledby=push-channel-title] select').nth(1).selectOption('18');assert.equal(await page.locator('.ep-delivery-channel[aria-labelledby=push-channel-title] select').nth(1).inputValue(),'18');
  const originalDocs=[...docs];docs.push(...Array.from({length:23},(_,i)=>({...docs[0],id:`extra-${i}`,name:`Act de test ${i}`,category:'Personal',vehicle_id:null,expires:date(400+i)})));
  await page.goto(base+'/documents?category=Personal');await page.locator('.ep-document-list>.ep-document').first().waitFor();
  assert.equal(await page.locator('.ep-list-section .ep-document-list>.ep-document').count(),10);
@@ -81,7 +82,7 @@ async function fixture(page,signedIn=true){
  await page.goto(base+'/documents?category=Personal');await page.locator('.ep-act-group>summary strong').getByText('Acte personale',{exact:true}).waitFor();await page.locator('.ep-act-group>summary').click();assert.equal(await page.locator('.ep-act-group>.ep-document-list').count(),0);await page.locator('.ep-act-group>summary').click();assert.equal(await page.locator('.ep-act-group>.ep-document-list>.ep-document').count(),1);
  await page.goto(base+'/documents?category=Vehicles');await page.locator('.ep-vehicle-group').first().waitFor();assert.equal(await page.locator('.ep-act-group').count(),0);
  const guest=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:844}});guest.setDefaultTimeout(12000);await fixture(guest,false);
- await guest.goto(base+'/login');await guest.getByRole('link',{name:'Ai uitat parola?',exact:true}).click();await guest.getByLabel('Adresa de email').fill('fixture@example.test');await guest.getByRole('button',{name:'Trimite linkul de resetare'}).click();await guest.getByRole('status').waitFor();assert.equal(recover,1);
+ await guest.goto(base+'/login');await guest.getByText('Intră cu email și parolă',{exact:true}).click();await guest.getByRole('link',{name:'Ai uitat parola?',exact:true}).click();await guest.getByLabel('Adresa de email').fill('fixture@example.test');await guest.getByRole('button',{name:'Trimite linkul de resetare'}).click();await guest.getByRole('status').waitFor();assert.equal(recover,1);
  await guest.goto(base+'/reset-password');await guest.getByRole('link',{name:'Cere un link nou'}).waitFor();
  await page.goto(base+'/reset-password');await page.getByLabel('Parola nouă',{exact:true}).fill('NewPassword123!');await page.getByLabel('Confirmă parola').fill('NewPassword123!');await page.getByRole('button',{name:'Salvează parola'}).click();await page.getByText('Parola a fost schimbată.',{exact:false}).waitFor();assert.equal(updates,1);
  assert.deepEqual(errors,[]);

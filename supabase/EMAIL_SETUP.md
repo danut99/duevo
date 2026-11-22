@@ -1,8 +1,32 @@
 # Alerte prin Gmail pentru Duevo
 
+## Template-uri HTML Duevo
+
+Emailurile de test și alertele includ o versiune HTML cu stiluri inline, plus o alternativă text simplu. Pentru activare, republică funcția `email`; secretele și programarea rămân valabile:
+
+```powershell
+npx.cmd supabase functions deploy email --remote=gibbjvdwugvoldcpttfd
+```
+
+Pentru resetarea parolei, în **Authentication → Email Templates → Reset Password** (în unele versiuni: **Authentication → Email → Templates**):
+
+- Subject: `{{ if eq .Data.duevo_language "en" }}Reset your Duevo password{{ else }}Resetează parola contului tău Duevo{{ end }}`
+- Body: copiază integral `supabase/templates/reset-password.html` și salvează.
+- Păstrează exact variabila `{{ .ConfirmationURL }}` din buton. Supabase o înlocuiește cu linkul securizat de recuperare; nu folosi o adresă statică.
+
+Template-ul include română și engleză; alege varianta din metadatele contului `duevo_language`. Aplicația salvează preferința după conectare. Conturile fără această preferință primesc varianta română. Emailurile de alertă și test folosesc aceeași preferință după republicarea funcției. Limba este separată de țara ghidurilor; alegerea englezei nu schimbă automat țara.
+
+Mecanismul de personalizare folosește variabila `.Data` și condițiile Go suportate de Supabase: https://supabase.com/docs/guides/auth/auth-email-templates și https://supabase.com/kb/troubleshooting/customizing-emails-by-language-KZ_38Q
+
+Generează din nou template-ul și previzualizările cu `node scripts/preview-email-templates.mjs`. Previzualizările din `outputs/email-templates/` folosesc un link demonstrativ pentru resetare; în Supabase se copiază numai fișierul din `supabase/templates/`.
+
+Verificare vizuală locală: `node scripts/check-email-templates.cjs`, după generarea previzualizărilor. Gmail și Outlook pot ajusta culorile și colțurile; verificarea locală nu înlocuiește un test real în clientul de email. Designul nu garantează livrarea în Inbox.
+
 Codul este pregătit în acest checkout. Nu este activ pe site până la aplicarea migrării, publicarea funcției și a frontendului și configurarea secretelor. Nu introduce parola Gmail sau parola de aplicație în cod, în SQL sau în variabile VITE_.
 
 ## 1. Baza de date
+
+Pentru emailuri activate implicit la 09:00, aplică și `supabase/migrations/202611220002_default_email_reminders.sql`, după migrarea inițială. Inițializează conturile cu email verificat, inclusiv Google, și conturile confirmate ulterior. Păstrează preferințele existente, inclusiv emailurile oprite manual. Verificare locală: `node scripts/check-email-defaults.mjs`.
 
 În proiectul `gibbjvdwugvoldcpttfd`, deschide **SQL Editor → New query**, copiază integral `supabase/migrations/202611220001_email_reminders.sql` și apasă **Run** o singură dată. Necesită migrările existente, inclusiv `202611210008_term_lifecycle_and_timed_reminders.sql`.
 

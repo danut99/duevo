@@ -14,7 +14,7 @@ let uploadAttempts=0,failAttempt=0;
 let vault=[{id:'album',profile_id:pid,category:'Photos',name:'Poze'}],files=Array.from({length:14},(_,i)=>({id:'file'+i,document_id:i===0?did:null,vault_document_id:i===0?null:'album',name:`Vacanță ${i}.png`,storage_key:uid+'/files/'+i,mime_type:'image/png',size_bytes:png.length}));
 files.push({id:'pdf',document_id:did,vault_document_id:null,name:'Poliță.pdf',storage_key:uid+'/pdf',mime_type:'application/pdf'});
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
- const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:844},acceptDownloads:true}),errors=[];page.setDefaultTimeout(12000);page.on('pageerror',e=>errors.push(e.message));
+ const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:844},acceptDownloads:true}),errors=[];page.setDefaultTimeout(12000);await page.addInitScript(()=>{localStorage.setItem('duevo-language','ro');localStorage.setItem('duevo-country','RO')});page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(({key,session})=>localStorage.setItem(key,JSON.stringify(session)),{key:`sb-${ref}-auth-token`,session:{access_token:token,refresh_token:'fixture',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user}});
  await page.route(origin+'/**',async route=>{const req=route.request(),url=new URL(req.url()),body=req.headers()['content-type']?.includes('application/json')&&req.postData()?req.postDataJSON():null;let data=[];
   if(url.pathname==='/auth/v1/user')data=user;

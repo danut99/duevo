@@ -1,0 +1,27 @@
+.ep-delivery-channels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;border-top:1px solid var(--ep-border);padding-top:18px;margin-top:4px;align-items:stretch}
+.ep-delivery-channel{min-width:0;padding:18px;border:1px solid var(--ep-border);border-radius:16px;background:var(--ep-inner);display:flex;flex-direction:column;gap:14px;overflow-wrap:anywhere}
+.ep-delivery-heading{display:flex;align-items:center;gap:10px;min-height:42px}
+.ep-delivery-heading>div{flex:1;min-width:0}
+.ep-delivery-heading h3{font-size:15px;line-height:1.35;margin:0;color:var(--ep-text)}
+.ep-delivery-heading p{font-size:13px;line-height:1.5;color:var(--ep-sub);margin:3px 0 0}
+.ep-delivery-icon{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:10px;background:#ff5d1f18;color:#ff783f}
+.pocket-app .ep-channel-control{display:flex;align-items:center;gap:8px;flex:none;min-height:44px;padding:6px 0 6px 8px;border:0;background:transparent;color:var(--ep-sub);font-size:12px;box-shadow:none;border-radius:8px}
+.ep-channel-control .ep-toggle{flex:none;width:34px;height:20px;padding:3px}.ep-channel-control .ep-toggle b{width:14px;height:14px}
+.ep-channel-schedule{display:grid;gap:8px;padding-top:14px;border-top:1px solid var(--ep-border)}
+.ep-channel-label{font-size:13px;color:var(--ep-sub);line-height:1.5}
+.ep-schedule-times{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-height:42px}
+.ep-delivery-channel .ep-hour{display:flex;gap:4px;margin:0;align-items:center}
+.ep-delivery-channel select{min-height:42px;padding:8px 10px;background:var(--ep-card);color:var(--ep-text);border:1px solid var(--ep-border);border-radius:9px;font-size:16px;color-scheme:dark}
+.pocket-app .ep-add-hour,.pocket-app .ep-remove-hour{min-height:42px;background:transparent;color:var(--ep-sub);border:1px dashed var(--ep-border);border-radius:9px;padding:8px 10px;font-size:13px;box-shadow:none}
+.pocket-app .ep-remove-hour{font-size:20px;border:0;padding:4px 8px}
+.ep-delivery-channel .ep-channel-description{font-size:13px;line-height:1.5;color:var(--ep-sub);margin:0;min-height:20px}
+.ep-delivery-channel .ep-push-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
+.ep-delivery-channel .ep-push-actions button{min-height:42px;font-size:13px;padding:9px 10px;white-space:normal;box-shadow:none;border-radius:10px}
+.ep-delivery-channel .ep-push-details{margin-top:auto;padding-top:10px;border-top:1px solid var(--ep-border);font-size:13px}
+.ep-delivery-channel .ep-push-details summary{min-height:32px;padding:4px 0;font-size:13px}
+.ep-delivery-channel .ep-push-details p{font-size:13px;line-height:1.6}
+.ep-delivery-channel .ep-channel-message,.ep-delivery-channel .ep-error{margin:0;font-size:13px;line-height:1.5}
+.ep-channel-message{color:var(--ep-sub)}
+.pocket-app[data-theme=carbon] .ep-delivery-channel{border:2px solid var(--ep-ink);background:#fff}
+.pocket-app[data-theme=carbon] .ep-delivery-channel select{color-scheme:light}
+@media(max-width:760px){.ep-delivery-channels{grid-template-columns:minmax(0,1fr)}.ep-delivery-channel{padding:14px}.ep-delivery-heading{gap:8px}.ep-delivery-heading h3{font-size:14px}.ep-delivery-icon{width:30px;height:30px}.ep-channel-control span{font-size:11px}}

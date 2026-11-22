@@ -27,9 +27,9 @@ Deno.serve(async req=>{
     let code=400;
     if(allowedEndpoint(job.endpoint)){
      // A document may have been renewed/deleted after this batch was claimed.
-     const {data:current,error:readError}=await admin.from('documents').select('reminder_version,profile_id,completed_at,name,entry_type').eq('id',job.document_id).maybeSingle();
+     const {data:current,error:readError}=await admin.from('documents').select('reminder_version,profile_id,completed_at,name,entry_type,user_id').eq('id',job.document_id).maybeSingle();
      if(readError)code=503;else if(!current||current.completed_at||current.reminder_version!==job.document_version){const {error:cancelError}=await admin.from('push_deliveries').update({status:'cancelled',error_code:'document_changed',lease_token:null,lease_until:null}).eq('id',job.delivery_id).eq('lease_token',job.claim_token);if(cancelError)throw cancelError;continue;}
-     else try{const {data:profile,error:profileError}=await admin.from('wallet_profiles').select('name').eq('id',current.profile_id).maybeSingle();if(profileError)throw profileError;const result=await webpush.sendNotification({endpoint:job.endpoint,keys:{p256dh:job.p256dh,auth:job.auth}},JSON.stringify(notificationPayload(job.document_id,job.document_version,job.lead_days,profile?.name,current.name,current.entry_type)),{TTL:86400,timeout:8000});code=result.statusCode}catch(error){code=responseCode(error)}
+     else try{const [{data:profile,error:profileError},{data:{user:owner},error:ownerError}]=await Promise.all([admin.from('wallet_profiles').select('name').eq('id',current.profile_id).maybeSingle(),admin.auth.admin.getUserById(current.user_id)]);if(profileError||ownerError||!owner)throw Error('Recipient unavailable');const result=await webpush.sendNotification({endpoint:job.endpoint,keys:{p256dh:job.p256dh,auth:job.auth}},JSON.stringify(notificationPayload(job.document_id,job.document_version,job.lead_days,profile?.name,current.name,current.entry_type,owner.user_metadata?.duevo_language==='en'?'en':'ro')),{TTL:86400,timeout:8000});code=result.statusCode}catch(error){code=responseCode(error)}
     }
     const {error:finishError}=await admin.rpc('finish_push_delivery',{delivery_id:job.delivery_id,claim_token:job.claim_token,result_code:code});if(finishError)throw finishError;
     if(code>=200&&code<300)accepted++;else failed++;
@@ -51,7 +51,7 @@ Deno.serve(async req=>{
    const cutoff=new Date(Date.now()-60000).toISOString();
    const {data:subscriptions,error}=await admin.from('push_subscriptions').update({last_test_at:new Date().toISOString()}).eq('user_id',user.id).eq('endpoint',body.endpoint).eq('enabled',true).or(`last_test_at.is.null,last_test_at.lt.${cutoff}`).select();
    if(error)throw error;const sub=subscriptions?.[0];if(!sub)return json({error:'Activează dispozitivul sau așteaptă un minut între teste.'},429);
-   try{await webpush.sendNotification({endpoint:sub.endpoint,keys:{p256dh:sub.p256dh,auth:sub.auth}},JSON.stringify({title:'Duevo',body:'Notificarea de test a ajuns. Telefonul este pregătit să primească alerte.',url:'/reminders',tag:'expiry-test'}),{TTL:300,timeout:8000});return json({accepted:true})}
+   try{await webpush.sendNotification({endpoint:sub.endpoint,keys:{p256dh:sub.p256dh,auth:sub.auth}},JSON.stringify({title:'Duevo',body:user.user_metadata?.duevo_language==='en'?'Your test notification has arrived. This device is ready for alerts.':'Notificarea de test a ajuns. Telefonul este pregătit să primească alerte.',url:'/reminders',tag:'expiry-test'}),{TTL:300,timeout:8000});return json({accepted:true})}
    catch(error){const code=responseCode(error);if(code===404||code===410)await admin.from('push_subscriptions').update({enabled:false}).eq('id',sub.id);return json({error:'Serviciul push nu a acceptat testul. Reactivează notificările și încearcă din nou.'},502)}
   }
   return json({error:'Unknown action'},400);

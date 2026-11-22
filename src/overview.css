@@ -38,6 +38,25 @@
 .ov-next-card h3{font-size:23px;line-height:1.35;font-weight:700;letter-spacing:-.6px;overflow-wrap:anywhere}.ov-next-card>p{font-size:13px;color:var(--ep-sub);margin:7px 0 20px;overflow-wrap:anywhere}
 .ov-next-date{border-top:1px solid var(--ep-border);padding:16px 0 22px}.ov-next-date small{display:block;font:500 10px/1.5 'JetBrains Mono',monospace;letter-spacing:1px;color:var(--ep-sub);margin-bottom:7px}.ov-next-date time{font-size:18px;font-weight:600;line-height:1.5}
 .ov-next-card>.ep-primary{width:100%}.ov-next-card>.ov-caught-up{padding:0;min-height:240px}
+.ov-attention,.ov-next{display:flex;flex-direction:column;min-width:0}
+.ov-attention>.ov-next-card,.ov-next>.ov-next-card{flex:1;display:flex;flex-direction:column}
+.ov-attention>.ov-next-card .ov-next-date,.ov-next>.ov-next-card .ov-next-date{margin-top:auto}
+.ep-overview .ov-attention-card.is-expired{border-color:#ef64644d;background:linear-gradient(140deg,#ef444409,transparent 65%),var(--ep-card)}
+.ov-attention-card.is-expired .ov-next-top>.ov-document-icon{color:#ff929c;background:#ef444414;border-color:#ef444438}
+.ov-attention-card.is-expired .ov-timing{padding:5px 9px;border-radius:8px;background:#ef444414;color:#ff9da6}
+.ov-attention-card.is-expired .ov-next-date{border-color:#ef444422}
+.ov-attention-card.is-expired .ov-next-date>small{color:#e7a3aa}
+.ep-overview .ov-attention-card.is-expired>.ep-primary{background:#b83949;border-color:#c84a59;color:#fff;box-shadow:0 6px 20px #b839491a}
+.ep-overview .ov-attention-card.is-expired>.ep-primary:hover{background:#ca4354}
+.pocket-app .ov-more-attention{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;margin-top:10px;padding:8px 0 0;background:transparent;color:var(--ep-sub);font-size:12px;box-shadow:none}
+.pocket-app[data-theme=carbon] .ov-attention-card.is-expired .ov-next-top>.ov-document-icon,.pocket-app[data-theme=carbon] .ov-attention-card.is-expired .ov-timing,.pocket-app[data-theme=carbon] .ov-attention-card.is-expired .ov-next-date>small{color:#a82c3b}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired{background:#fff1f2;border:2px solid #b52d43;box-shadow:3px 3px 0 #7d1c2e}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired .ov-next-top>.ov-document-icon{background:#ffe0e5;border-color:#b52d43;color:#a21f35}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired .ov-timing{background:#ffdce3;color:#921b30;font-weight:650}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired .ov-next-date{border-color:#e8a2af}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired .ov-next-date>small{color:#921b30}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired>.ep-primary{background:#ae263e;border:2px solid #74182a;color:#fff;box-shadow:2px 2px 0 #74182a}
+.pocket-app.ep-workspace[data-theme=carbon] .ov-attention-card.is-expired>.ep-primary:hover{background:#941c32;color:#fff}
 .ov-calendar-card{padding:0 22px}.ov-calendar-row{display:flex;align-items:center;gap:18px;width:100%;background:none;color:var(--ep-text);text-align:left;padding:18px 0;border-bottom:1px solid var(--ep-border)}.ov-calendar-row:last-child{border:0}
 .ov-calendar-row:hover .ov-calendar-name>strong{color:var(--ep-accent)}
 .ov-calendar-day{display:grid;place-items:center;flex:none;width:48px;min-height:54px;padding:6px;border:1px solid var(--ep-border);border-radius:11px;background:var(--ep-inner)}
@@ -91,3 +110,18 @@
  .ov-loading{padding:24px;flex-direction:column;text-align:center}
 }
 
+.ov-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ov-skeleton{pointer-events:none}
+.ov-skeleton-line,.ov-skeleton-block,.ov-skeleton-button,.ov-skeleton-number{display:block;background:var(--ep-border);opacity:.55;border-radius:7px}
+.ov-skeleton-line{height:14px;width:75%;margin:8px 0}
+.ov-skeleton-line.short{width:40%;height:10px}
+.ov-skeleton-line.title{width:65%;height:24px;margin:12px 0}
+.ov-skeleton-button{width:190px;height:44px;flex:none;border-radius:12px}
+.ov-skeleton-number{width:28px;height:32px}
+.ov-summary.ov-skeleton>div{min-height:38px}
+.ov-columns.ov-skeleton .ov-next-card{min-height:285px;box-sizing:border-box}
+.ov-columns.ov-skeleton .ov-next-top>.ov-skeleton-line{width:100px}
+.ov-skeleton-calendar{padding:24px;min-height:230px}
+.ov-skeleton-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:24px}
+.ov-skeleton-calendar-grid>span{height:110px}
+@media(max-width:599px){.ov-outlook.ov-skeleton>.ov-skeleton-button{width:100%;margin-top:4px}.ov-columns.ov-skeleton .ov-next-card{min-height:290px}.ov-skeleton-calendar{padding:20px}.ov-skeleton-calendar-grid{gap:6px}.ov-skeleton-calendar-grid>span{height:65px}}

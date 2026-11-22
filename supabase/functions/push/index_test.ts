@@ -8,10 +8,11 @@ Deno.test('push function authenticates each path, restricts recipients and recor
  globalThis.fetch=async(input,init)=>{const request=new Request(input,init),url=new URL(request.url);const raw=await request.text(),body=raw?JSON.parse(raw):null;calls.push({path:url.pathname,body});
   let response:unknown=[];
   if(url.pathname==='/auth/v1/user'){if(request.headers.get('authorization')!=='Bearer user-test')return Response.json({message:'invalid'},{status:401});response={id:'11111111-1111-4111-8111-111111111111',aud:'authenticated',role:'authenticated',email:'fixture@example.test'}}
+  else if(url.pathname.startsWith('/auth/v1/admin/users/'))response={user:{id:'11111111-1111-4111-8111-111111111111',user_metadata:{duevo_language:'ro'}}};
   else if(url.pathname==='/rest/v1/rpc/push_health')response={scheduleReady:true,lastRun:new Date().toISOString()};
   else if(url.pathname==='/rest/v1/push_subscriptions'){assert.equal(url.searchParams.get('user_id'),'eq.11111111-1111-4111-8111-111111111111');response=[{id:'sub',endpoint:'https://fcm.googleapis.com/fcm/send/fixture',p256dh:'fake',auth:'fake'}]}
   else if(url.pathname==='/rest/v1/rpc/claim_push_deliveries')response=[{delivery_id:'delivery',claim_token:'lease',document_id:'document',document_version:2,lead_days:7,endpoint:'https://fcm.googleapis.com/fcm/send/fixture',p256dh:'fake',auth:'fake'}];
-  else if(url.pathname==='/rest/v1/documents')response={reminder_version:2,profile_id:'profile'};
+  else if(url.pathname==='/rest/v1/documents')response={user_id:'11111111-1111-4111-8111-111111111111',reminder_version:2,profile_id:'profile'};
   else if(url.pathname==='/rest/v1/wallet_profiles')response={name:'Maria'};
   return Response.json(response);
  };

@@ -3,12 +3,12 @@ import type {PacketCandidate,PacketDraft} from './renewal-packet-data';
 
 const normalized=(value:string)=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const patterns:Record<string,RegExp>={
- TALON:/\btalon\b|\bcertificat(?:ul)?\s+(?:de\s+)?inmatriculare\b/,
- CIV:/\bciv\b|\bcarte(?:a)?\s+(?:de\s+)?identitate\s+(?:(?:a|al)\s+)?vehicul/,
- CI:/\bbuletin\b|\bci\b|\bcarte(?:a)?\s+(?:de\s+)?identitate\b/,
- RCA:/\brca\b/,CAS:/\bcasco\b/,PER:/\bpermis\b/,PAS:/\bpasaport/,
- REV:/\brevizi[ea]\b|\bistoric\b.*\bservice\b/,PARK:/\bparcare\b/,
- ADDRESS:/\bdomiciliu\b/,CIVIL:/\bcertificat(?:ul)?\s+(?:de\s+)?(?:nastere|casatorie)\b/
+ TALON:/\btalon\b|\bcertificat(?:ul)?\s+(?:de\s+)?inmatriculare\b|vehicle registration certificate/,
+ CIV:/\bciv\b|\bcarte(?:a)?\s+(?:de\s+)?identitate\s+(?:(?:a|al)\s+)?vehicul|vehicle identity document/,
+ CI:/\bbuletin\b|\bci\b|\bcarte(?:a)?\s+(?:de\s+)?identitate\b|identity card|identity document/,
+ RCA:/\brca\b/,CAS:/\bcasco\b/,PER:/\bpermis\b|driving licen[cs]e/,PAS:/\bpasaport|passport/,
+ REV:/\brevizi[ea]\b|\bistoric\b.*\bservice\b|service history/,PARK:/\bparcare\b|parking/,
+ ADDRESS:/\bdomiciliu\b|proof of address/,CIVIL:/\bcertificat(?:ul)?\s+(?:de\s+)?(?:nastere|casatorie)\b|birth certificate|marriage certificate/
 };
 const kinds:Record<string,string>={registration:'TALON',civ:'CIV',identity:'CI',licence:'PER',passport:'PAS',service:'REV',parking:'PARK',address:'ADDRESS',civil:'CIVIL'};
 function matches(candidate:PacketCandidate,kind:string){

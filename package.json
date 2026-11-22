@@ -12,6 +12,8 @@
     "push:keys": "node scripts/generate-push-config.mjs",
     "test:vault": "node scripts/check-document-vault.mjs",
     "test:email": "node scripts/check-email.mjs",
+    "test:monthly-language": "node scripts/check-monthly-language.mjs",
+    "test:monthly-language:browser": "node scripts/check-monthly-language-ui.cjs",
     "test:renewal": "node scripts/check-renewal-packets.mjs && node scripts/check-contextual-files.mjs && node --experimental-strip-types scripts/check-renewal-pdf.mjs && node --experimental-strip-types scripts/check-renewal-preselection.mjs"
   },
   "dependencies": {

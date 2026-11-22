@@ -1,3 +1,4 @@
+import {tr,locale} from './i18n.ts';
 import {supabase,listDocuments,listVehicles,listWalletProfiles} from './supabase';
 import type {Doc} from './supabase';
 import {listFiles,listVault} from './document-vault';
@@ -8,7 +9,7 @@ import {preselectPacketFiles} from './renewal-preselection';
 export type PacketDraft={values:Record<string,string>;assignments:Record<string,string[]>;originals:string[];expiry?:string};
 export type PacketCandidate={file:DocumentFile;title:string;category:string;vehicleId?:string;documentId?:string;kind?:string};
 export const emptyDraft=():PacketDraft=>({values:{},assignments:{},originals:[]});
-function db(){if(!supabase)throw Error('Conexiunea nu este disponibilă.');return supabase}
+function db(){if(!supabase)throw Error(tr("Conexiunea nu este disponibilă."));return supabase}
 export function parseDraft(value:unknown):PacketDraft{
  const input=value&&typeof value==='object'?value as Record<string,unknown>:{};
  const values=Object.fromEntries(Object.entries(input.values&&typeof input.values==='object'?input.values:{}).filter(([k,v])=>k.length<80&&typeof v==='string'&&v.length<=2000)) as Record<string,string>;
@@ -17,8 +18,8 @@ export function parseDraft(value:unknown):PacketDraft{
 }
 export async function loadPacket(doc:Doc,code:string){
  const [documents,vehicles,profiles,{data:saved,error}]=await Promise.all([listDocuments(),listVehicles(),listWalletProfiles(),db().from('renewal_packets').select('draft').eq('document_id',doc.id).eq('guide_code',code).maybeSingle()]);
- if(error)throw Error('Pregătirea dosarului nu poate fi încărcată. Verifică conexiunea sau actualizarea serviciului.');
- const profileId=doc.profileId;if(!profileId)throw Error('Asociază actul unui profil înainte de pregătirea dosarului.');
+ if(error)throw Error(tr("Pregătirea dosarului nu poate fi încărcată. Verifică conexiunea sau actualizarea serviciului."));
+ const profileId=doc.profileId;if(!profileId)throw Error(tr("Asociază actul unui profil înainte de pregătirea dosarului."));
  const vault=await listVault(profileId),candidates:PacketCandidate[]=[];
  const matching=(category:string,vehicleId?:string|null)=>category==='Personal'||doc.category==='Vehicles'&&category==='Vehicles'&&(doc.vehicleId?vehicleId===doc.vehicleId:!vehicleId);
  // Never suggest another car's files or another profile's personal documents.
@@ -41,7 +42,7 @@ export async function loadPacket(doc:Doc,code:string){
 }
 export function requirementKind(id:string,code:string){return ({registration:'TALON',civ:'CIV',identity:'CI',policy:code==='CAS'?'CAS':'RCA',licence:'PER',passport:'PAS',service:'REV',parking:'PARK',address:'ADDRESS',civil:'CIVIL'} as Record<string,string>)[id]}
 export async function savePacket(doc:Doc,code:string,draft:PacketDraft){
- const client=db(),{data:{user}}=await client.auth.getUser();if(!user)throw Error('Intră din nou în cont.');
+ const client=db(),{data:{user}}=await client.auth.getUser();if(!user)throw Error(tr("Intră din nou în cont."));
  const {error}=await client.from('renewal_packets').upsert({document_id:doc.id,user_id:user.id,guide_code:code,draft:parseDraft({...draft,expiry:doc.expires}),updated_at:new Date().toISOString()},{onConflict:'document_id,guide_code'});
- if(error)throw Error('Pregătirea nu a putut fi salvată. Încearcă din nou.');
+ if(error)throw Error(tr("Pregătirea nu a putut fi salvată. Încearcă din nou."));
 }

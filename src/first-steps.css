@@ -1,0 +1,23 @@
+.pocket-app .du-first-steps{padding:28px;margin:12px 0}
+.pocket-app .du-first-steps .du-first-eyebrow{font-size:11px;letter-spacing:1px;color:var(--ep-accent);margin:0 0 12px}
+.pocket-app .du-first-steps h1{font-size:28px;line-height:1.3;margin:0 0 10px;letter-spacing:-.7px}
+.du-first-steps>p{font-size:15px;line-height:1.6;color:var(--ep-sub)}
+.du-first-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}
+.pocket-app .du-first-choices>button{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:20px;border:1px solid var(--ep-border);border-radius:16px;background:var(--ep-inner);color:var(--ep-text);text-align:left;min-width:0;box-shadow:none}
+.pocket-app .du-first-choices>button:hover{border-color:var(--ep-accent);background:#ff5d1f0a}
+.du-first-icon{display:grid;place-items:center;width:44px;height:44px;background:#ff5d1f18;color:#ff783f;border-radius:12px}
+.du-first-choices strong{font-size:17px}.du-first-choices small{font-size:14px;line-height:1.6;color:var(--ep-sub)}
+.du-first-choice-action{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:10px;font-size:13px;color:var(--ep-accent)}
+.du-first-steps footer,.du-first-alerts footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap}
+.du-first-steps footer>span{font-size:13px;line-height:1.5;color:var(--ep-sub)}
+.pocket-app .du-first-steps footer button,.pocket-app .du-first-alerts footer button{min-height:44px;padding:8px 0;background:transparent;color:var(--ep-sub);font-size:14px;text-decoration:underline;text-underline-offset:4px;box-shadow:none}
+.du-first-alerts{padding:20px;border:1px solid #ff5d1f55;border-radius:16px;background:var(--ep-card);margin-bottom:20px}
+.du-first-alerts header{display:flex;gap:12px;align-items:center}.du-first-alerts header>svg{color:#10b981;flex:none}
+.du-first-alerts h2{font-size:18px;line-height:1.5}.du-first-alerts p{font-size:14px;line-height:1.6;color:var(--ep-sub);overflow-wrap:anywhere}
+.du-first-alert-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.du-first-alert-options>div{padding:14px;border:1px solid var(--ep-border);border-radius:12px;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--ep-inner)}
+.du-first-alert-options strong{font-size:14px}.du-first-alert-options>div>svg{color:var(--ep-accent)}
+.du-first-alert-options .ep-secondary{min-height:44px;font-size:13px;margin-top:auto;white-space:normal}
+.du-first-alerts [role=status],.du-first-alerts .ep-error{margin-top:14px}
+.pocket-app[data-theme=carbon] .du-first-icon{color:#a5370b}
+@media(max-width:650px){.pocket-app .du-first-steps{padding:20px}.pocket-app .du-first-steps h1{font-size:24px}.du-first-choices{grid-template-columns:1fr;gap:10px;margin-top:20px}.pocket-app .du-first-choices>button{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:16px}.du-first-icon{grid-row:1/4;width:40px;height:40px}.du-first-choices strong,.du-first-choices small,.du-first-choice-action{grid-column:2}.du-first-choice-action{padding-top:6px}.du-first-choices small{font-size:13px}.du-first-alert-options{grid-template-columns:1fr}.du-first-alerts{padding:16px}}

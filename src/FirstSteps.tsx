@@ -1,0 +1,21 @@
+import {useEffect,useState} from 'react';
+import {BellRing,CalendarDays,Car,CheckCircle2,ChevronRight,IdCard,Mail} from 'lucide-react';
+import {tr} from './i18n.ts';
+import {getEmailConfig,testEmail} from './email';
+import type {EmailConfig} from './email';
+import {deviceSettings,enablePush,getPushConfig,pushSupported,testPush} from './push';
+import type {PushConfig} from './push';
+import './first-steps.css';
+
+export default function FirstSteps({open,onSkip}:{open:(path:string)=>void;onSkip:()=>void}){
+ const choices=[{Icon:Car,title:'Act auto',copy:'Adaugă mașina, apoi RCA, ITP sau rovinieta.',path:'/documents/new?category=Vehicles&onboarding=1'},{Icon:IdCard,title:'Act personal',copy:'Buletin, permis, pașaport și alte acte personale.',path:'/documents/new?category=Personal&onboarding=1'},{Icon:CalendarDays,title:'Alt termen',copy:'O programare, un abonament sau o dată importantă.',path:'/documents/new?category=Personal&kind=OTHER&onboarding=1'}];
+ return <section className="ep-card du-first-steps" aria-labelledby="first-steps-title"><p className="du-first-eyebrow">{tr('PRIMUL TĂU PAS')}</p><h1 id="first-steps-title">{tr('Bine ai venit în Duevo.')}</h1><p>{tr('Ce vrei să urmărești? Alege și adaugă primul tău act.')}</p><div className="du-first-choices">{choices.map(({Icon,title,copy,path})=><button type="button" key={title} onClick={()=>open(path)}><span className="du-first-icon"><Icon size={24}/></span><strong>{tr(title)}</strong><small>{tr(copy)}</small><span className="du-first-choice-action">{tr('Începe aici')}<ChevronRight size={16}/></span></button>)}</div><footer><span>{tr('Poți adăuga și celelalte tipuri mai târziu.')}</span><button type="button" onClick={onSkip}>{tr('Mai târziu')}</button></footer></section>;
+}
+
+export function FirstAlertCheck({open,onDismiss}:{open:(path:string)=>void;onDismiss:()=>void}){
+ const [email,setEmail]=useState<EmailConfig|null>(null),[push,setPush]=useState<PushConfig|null>(null),[connected,setConnected]=useState(false),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
+ useEffect(()=>{let live=true;Promise.allSettled([getEmailConfig(),getPushConfig(),deviceSettings()]).then(([e,p,d])=>{if(!live)return;if(e.status==='fulfilled')setEmail(e.value);if(p.status==='fulfilled')setPush(p.value);if(d.status==='fulfilled')setConnected(!!d.value);setReady(true)});return()=>{live=false}},[]);
+ async function run(task:()=>Promise<unknown>,success:string){setBusy(true);setMessage('');setError('');try{await task();setMessage(tr(success))}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
+ const canPush=pushSupported()&&push?.configured&&push.publicKey&&Notification.permission!=='denied';
+ return <section className="du-first-alerts" aria-labelledby="first-alert-title"><header><CheckCircle2 size={22}/><div><h2 id="first-alert-title">{tr('Primul act este salvat.')}</h2><p>{tr('Verificăm și alertele?')}</p></div></header><div className="du-first-alert-options"><div><Mail size={19}/><strong>{tr('Email')}</strong><p>{email?.email||tr('Pe adresa contului tău.')}</p><button type="button" className="ep-secondary" disabled={!ready||busy||!email?.configured||!email?.preferences?.enabled} onClick={()=>void run(testEmail,'Test trimis. Verifică Inbox și Spam.')}>{tr('Trimite email de test')}</button></div><div><BellRing size={19}/><strong>{tr('Pe acest dispozitiv')}</strong><p>{connected?tr('Notificările sunt activate.'):tr('Permite notificările pentru alerte pe telefon.')}</p><button type="button" className="ep-secondary" disabled={!ready||busy||!canPush} onClick={()=>void run(async()=>{if(connected)await testPush();else{await enablePush(push!.publicKey!,[9]);setConnected(true)}},connected?'Test trimis. Verifică notificările dispozitivului.':'Notificările sunt activate.')}>{connected?tr('Trimite test'):tr('Activează notificările')}</button></div></div>{error&&<p className="ep-error" role="alert">{error}</p>}{message&&<p role="status">{message}</p>}<footer><button type="button" onClick={()=>open('/reminders')}>{tr('Toate setările de alerte')}</button><button type="button" onClick={onDismiss}>{tr('Mai târziu')}</button></footer></section>;
+}

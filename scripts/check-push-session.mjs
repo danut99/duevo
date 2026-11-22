@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import {sourceModule} from './source-module.mjs';
+const state={user:'a',enabled:true,unsubscribed:0,updates:0,permissionRequests:0};
+const values=new Map();
+globalThis.localStorage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+globalThis.window={PushManager:{},Notification:{}};
+globalThis.isSecureContext=true;
+globalThis.Notification={permission:'granted',requestPermission:async()=>{state.permissionRequests++;return 'granted'}};
+const sub={endpoint:'https://push.test/a',unsubscribe:async()=>{state.unsubscribed++;return true}};
+Object.defineProperty(globalThis,'navigator',{configurable:true,value:{serviceWorker:{getRegistration:async()=>({pushManager:{getSubscription:async()=>sub}})}}});
+globalThis.__pushTestClient={auth:{getUser:async()=>({data:{user:{id:state.user}},error:null})},from:()=>{
+ const filters={};let update;
+ const query={select(){return query},eq(k,v){filters[k]=v;return query},update(v){update=v;return query},delete(){return query},maybeSingle:async()=>({data:{enabled:state.enabled,hour:17,hours:[17],timezone:'UTC'},error:null}),then(resolve){if(update){state.updates++;if(filters.user_id===state.user)state.enabled=update.enabled}return Promise.resolve({error:null}).then(resolve)}};
+ return query;
+}};
+const source=readFileSync('src/push.ts','utf8').replace("import {supabase} from './supabase';",'const supabase=globalThis.__pushTestClient;');
+const js=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+const push=await import(sourceModule(source));
+await push.suspendPush();assert.equal(state.enabled,false);assert.equal(state.unsubscribed,0);assert(values.has('duevo-push-resume'));
+state.user='b';await push.restorePush();assert.equal(state.enabled,false);assert(values.has('duevo-push-resume'));
+state.user='a';await Promise.all([push.restorePush(),push.restorePush()]);assert.equal(state.enabled,true);assert.equal(state.updates,2);assert.equal(values.has('duevo-push-resume'),false);
+assert.deepEqual((await push.deviceSettings()).hours,[17]);assert.equal(state.permissionRequests,0);
+state.enabled=false;await push.suspendPush();await push.restorePush();assert.equal(state.enabled,false);
+state.enabled=true;await push.suspendPush();Notification.permission='denied';await push.restorePush();assert.equal(state.enabled,false);
+console.log('PASS: logout pauses delivery, same-account login restores existing hours without permission prompts, other accounts and denied permission do not restore, opt-out stays off.');

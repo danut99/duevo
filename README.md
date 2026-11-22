@@ -3,6 +3,18 @@
 React + TypeScript + Vite, with Supabase Auth, Postgres, and private Storage.
 Installable on supported mobile browsers; no separate native app is required.
 
+## Monthly plan and language preferences
+
+The dashboard includes a calendar-month action plan with overdue items first, document preparation links and completion actions for appointments. Completed items are removed from the active plan; the plan uses the active wallet profile.
+
+The first visit asks for Romanian or English and, independently, the country used for renewal guides (Romania / another country). The header's RO/EN button reopens these preferences. They are saved on this browser; after sign-in the app also records `duevo_language` and `duevo_country` in the account's user metadata. Changing language preserves document names, notes, files and internal category keys. Dates, UI text, calendar exports and renewal PDF labels follow the selected language.
+
+Romanian official links and procedure packs appear only when Romania is explicitly selected, regardless of UI language. Other countries receive a general preparation checklist and retain document storage, deadlines and alerts; no Romanian institutional links or country-specific requirements are presented as applicable abroad. Country-specific guides for other jurisdictions are not implemented.
+
+Email and push alerts and tests use the account's `duevo_language` metadata, defaulting to Romanian for existing accounts. Deploy the updated `email` and `push` functions to enable English delivery. Copy the updated `supabase/templates/reset-password.html` into Supabase Auth's Reset Password body to enable both languages; it chooses the language from account metadata and keeps the secure confirmation URL. Suggested subject: `{{ if eq .Data.duevo_language "en" }}Reset your Duevo password{{ else }}Resetează parola contului tău Duevo{{ end }}`. No new database migration is required for these language and monthly-plan changes.
+
+Validation: `npm run test:monthly-language`, and with Vite running at port 5192, `npm run test:monthly-language:browser`. Browser checks use isolated API fixtures and do not send emails or change hosted records.
+
 ## Start locally
 
 ```sh

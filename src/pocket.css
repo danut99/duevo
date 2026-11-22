@@ -507,8 +507,10 @@
  .pocket-app.ep-welcome .ep-intro-header>div:last-child{display:flex;flex:0 0 auto;align-items:center;gap:5px}
  .pocket-app.ep-welcome .ep-intro-header .ep-welcome-logo{width:32px;height:36px;border-radius:10px}
  .pocket-app.ep-welcome .ep-intro-header .ep-welcome-logo img{width:26px;height:26px}
- .pocket-app.ep-welcome .ep-intro-header .duevo-wordmark{font-size:20px}
- .pocket-app.ep-welcome .ep-intro-header small{font-size:8px;white-space:nowrap}
+ .pocket-app.ep-welcome .ep-intro-header>div:first-child>span:last-child{min-width:0}
+ .pocket-app.ep-welcome .ep-intro-header .duevo-wordmark{font-size:17px}
+ .pocket-app.ep-welcome .ep-intro-header small{font-size:7px;white-space:nowrap;line-height:1.35;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+ .pocket-app.ep-welcome .ep-intro-header .du-language-button{gap:4px;padding-inline:7px;font-size:11px}
  .pocket-app.ep-welcome .ep-intro-header .ep-theme-switch{width:46px;min-width:46px;padding-inline:0}
  .pocket-app.ep-welcome .ep-intro-header .ep-theme-switch-track{transform:scale(.72)}
  .pocket-app.ep-welcome .ep-intro-header .ep-intro-skip{min-height:36px;padding:8px 10px;font-size:10px;white-space:nowrap}
@@ -517,7 +519,7 @@
  .pocket-app.ep-welcome .ep-intro-header{gap:5px}
  .pocket-app.ep-welcome .ep-intro-header>div:first-child{gap:5px}
  .pocket-app.ep-welcome .ep-intro-header .ep-welcome-logo{width:28px;height:32px}
- .pocket-app.ep-welcome .ep-intro-header .duevo-wordmark{font-size:18px}
+ .pocket-app.ep-welcome .ep-intro-header .duevo-wordmark{font-size:16px}
  .pocket-app.ep-welcome .ep-intro-header small{font-size:7px}
  .pocket-app.ep-welcome .ep-intro-header .ep-intro-skip{padding-inline:8px;font-size:9px}
 }

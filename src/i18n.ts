@@ -3,11 +3,21 @@ export type Language='ro'|'en';
 export type GuideCountry='RO'|'OTHER';
 const storageKey='duevo-language';
 function storedLanguage():Language|null{try{const value=localStorage.getItem(storageKey);return value==='ro'||value==='en'?value:null}catch{return null}}
+// Until the visitor chooses, infer preferences: the time zone indicates residence for
+// renewal guides, and Romania-based visitors default to Romanian.
+const isBrowser=typeof window!=='undefined'&&typeof navigator!=='undefined';
+function detectCountry():GuideCountry{if(!isBrowser)return 'OTHER';try{return Intl.DateTimeFormat().resolvedOptions().timeZone==='Europe/Bucharest'?'RO':'OTHER'}catch{return 'OTHER'}}
+const detectedCountry=detectCountry();
+function detectLanguage():Language{
+ if(!isBrowser||detectedCountry==='RO')return 'ro';
+ for(const tag of navigator.languages?.length?navigator.languages:[navigator.language]){const code=String(tag||'').toLowerCase().split('-')[0];if(code==='ro'||code==='en')return code}
+ return 'en';
+}
 let chosen=storedLanguage();
-let language:Language=chosen||'ro';
+let language:Language=chosen||detectLanguage();
 const listeners=new Set<()=>void>();
 let country:GuideCountry|null=(()=>{try{const value=localStorage.getItem('duevo-country');return value==='RO'||value==='OTHER'?value:null}catch{return null}})();
-export const getCountry=():GuideCountry=>country||'OTHER';
+export const getCountry=():GuideCountry=>country||detectedCountry;
 export const hasChosenCountry=()=>country!==null;
 export function setCountry(value:GuideCountry){country=value;try{localStorage.setItem('duevo-country',value)}catch{}for(const listener of listeners)listener()}
 export const getLanguage=()=>language;

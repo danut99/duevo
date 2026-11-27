@@ -2,7 +2,8 @@ const {chromium}=require('C:/Users/Danut/.codex/dragon-preview-tools/node_module
 const assert=require('node:assert/strict');
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
  const page=await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
- await page.goto(process.env.TEST_APP_URL||'http://127.0.0.1:5180/');await page.locator('.du-language-dialog[open]').waitFor();
+ await page.goto(process.env.TEST_APP_URL||'http://127.0.0.1:5180/');await page.locator('.pocket-app').first().waitFor();assert.equal(await page.locator('.du-language-dialog[open]').count(),0,'First visit does not open the dialog');
+ await page.evaluate(()=>window.dispatchEvent(new Event('duevo:choose-language')));await page.locator('.du-language-dialog[open]').waitFor();
  const backdrop=await page.locator('.du-language-dialog').evaluate(el=>getComputedStyle(el,'::backdrop').backdropFilter);assert.equal(backdrop,'none');
  assert(await page.locator('.du-language-background-paused').evaluate(el=>el.inert));
  assert(await page.locator('.du-language-background-paused').evaluate(el=>Array.from(el.querySelectorAll('*')).every(node=>getComputedStyle(node).animationPlayState.split(',').every(value=>value.trim()==='paused'))));

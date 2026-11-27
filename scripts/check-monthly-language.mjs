@@ -16,7 +16,7 @@ assert.equal(getCountry(),'OTHER');setCountry('RO');setLanguage('en');assert.equ
 setLanguage('en');assert.equal(tr('Actele mele'),'My documents');assert.equal(tr('Emailurile au fost oprite.'),'Emails turned off.');assert.equal(tr('Ce ai de rezolvat luna aceasta'),'What needs doing this month');assert.equal(tr('Mașinile tale'),'Your vehicles');assert.equal(tr('Ora de trimitere'),'Delivery time');
 assert.equal(tr('În {0} {1}',7,tr('zile')),'In 7 days');assert.equal(locale(),'en-GB');
 setLanguage('ro');assert.equal(tr('Actele mele'),'Actele mele');assert.equal(locale(),'ro-RO');
-const catalogSource=readFileSync('src/translations.en.ts','utf8'),catalog=JSON.parse(catalogSource.slice(catalogSource.indexOf('=')+1).trim().replace(/;$/,''));
+const catalogSource=readFileSync('src/translations.en.ts','utf8'),catalog={...JSON.parse(readFileSync('src/creator-translations.en.json','utf8')),...JSON.parse(catalogSource.slice(catalogSource.indexOf('=')+1).trim().replace(/;$/,'').replace(/^\{\s*\.\.\.creatorEnglish,/,'{'))};
 const placeholders=value=>[...value.matchAll(/\{\d+\}/g)].map(m=>m[0]).sort();
 for(const [key,value] of Object.entries(catalog))assert.deepEqual(placeholders(value),placeholders(key),'Placeholder mismatch: '+key);
 for(const file of readdirSync('src').filter(f=>/\.tsx?$/.test(f)&&f!=='translations.en.ts')){

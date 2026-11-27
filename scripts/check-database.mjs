@@ -107,6 +107,18 @@ await db.query("update public.documents set event_time=(now() at time zone 'UTC'
 await db.exec('reset role;set role service_role');
 assert.equal((await db.query('select * from public.claim_push_deliveries(10)')).rows.filter(j=>j.document_id===timed.id&&j.lead_days<0).length,0);
 console.log('PASS: term lifecycle migration idempotence; completion isolation and queue cancellation; relative minute alerts; no early or post-event delivery.');
+await db.exec('reset role');
+await db.exec(readFileSync('supabase/migrations/202611270001_custom_reminder_days.sql','utf8'));
+await db.exec(readFileSync('supabase/migrations/202611270001_custom_reminder_days.sql','utf8'));
+await asUser(a);
+const insertCustom=(days,leads)=>db.query(`insert into public.documents(user_id,name,category,expires,days,reminder_days) values($1,'Pașaport','Personal',current_date+200,$2,$3) returning days,reminder_days`,[a,days,leads]);
+const custom=(await insertCustom(180,[180,45,2,0])).rows[0];
+assert.equal(custom.days,180);assert.deepEqual(custom.reminder_days,[180,45,2,0]);
+await assert.rejects(()=>insertCustom(366,[366]));
+await assert.rejects(()=>insertCustom(30,[30,-1]));
+await assert.rejects(()=>insertCustom(9,[9,8,7,6,5,4,3,2,1]));
+await assert.rejects(()=>insertCustom(400,[30]));
+console.log('PASS: custom reminder days from 0 to 365, at most 8 per document; preset-only days check removed; migration idempotence.');
 console.log('PASS: additive migration; account isolation; renewal history and stale-write protection; reminder validation; push endpoint/timezone checks; queue deduplication, leases, retries and accepted delivery state.');
 }finally{await db.close()}
 

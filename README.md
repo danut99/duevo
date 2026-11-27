@@ -7,7 +7,7 @@ Installable on supported mobile browsers; no separate native app is required.
 
 The dashboard includes a calendar-month action plan with overdue items first, document preparation links and completion actions for appointments. Completed items are removed from the active plan; the plan uses the active wallet profile.
 
-The first visit asks for Romanian or English and, independently, the country used for renewal guides (Romania / another country). The header's RO/EN button reopens these preferences. They are saved on this browser; after sign-in the app also records `duevo_language` and `duevo_country` in the account's user metadata. Changing language preserves document names, notes, files and internal category keys. Dates, UI text, calendar exports and renewal PDF labels follow the selected language.
+Language and guide country are detected automatically on the first visit, without a blocking dialog: the `Europe/Bucharest` time zone selects Romania and Romanian; elsewhere the browser's preferred language decides between Romanian and English (default English) and the country is "another country". The header's RO/EN button opens the preferences to change them. Explicit choices are saved on this browser; after sign-in the app also records `duevo_language` and `duevo_country` in the account's user metadata, and on a new browser without an explicit choice those account values take precedence over detection. Changing language preserves document names, notes, files and internal category keys. Dates, UI text, calendar exports and renewal PDF labels follow the selected language.
 
 Romanian official links and procedure packs appear only when Romania is explicitly selected, regardless of UI language. Other countries receive a general preparation checklist and retain document storage, deadlines and alerts; no Romanian institutional links or country-specific requirements are presented as applicable abroad. Country-specific guides for other jurisdictions are not implemented.
 
@@ -43,7 +43,7 @@ The browser uses the signed-in user's access token. The supplied publishable key
 - Expiry dashboard, search, category/status filters, and a renewal checklist.
 - Optional private PDF/JPG/PNG/WebP uploads up to 5 MB.
 - Download attachments, edit documents, export calendars, and delete documents.
-- Single reminder lead time on the original schema; multiple alerts and renewal history after the additive database upgrade.
+- Single reminder lead time on the original schema; multiple alerts and renewal history after the additive database upgrade. Besides the presets, users can add custom lead times from 1 to 365 days (up to 8 per document) after `supabase/migrations/202611270001_custom_reminder_days.sql`.
 - Responsive layout and a web app manifest for phone installation.
 
 ## Reminders, renewal history and push

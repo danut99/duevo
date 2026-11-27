@@ -1,7 +1,7 @@
 import Contact from './Contact';
 import AppPreloader from './AppPreloader';
 import {LanguageButton,useLocalePreference} from './LanguagePicker';
-import {getLanguage,getCountry} from './i18n.ts';
+import {getLanguage,getCountry,hasChosenLanguage,hasChosenCountry,setLanguage,setCountry} from './i18n.ts';
 import {tr,locale} from './i18n.ts';
 import PasswordRecovery from './PasswordRecovery';
 import BrandMark from './BrandMark';
@@ -41,7 +41,14 @@ export default function App(){
     return()=>{current=false;};
   },[session?.user.id,session?.user.email,session?.user.email_confirmed_at]);
   const canCreate=!!session&&creatorAccess?.id===session.user.id&&creatorAccess.allowed;
-  useEffect(()=>{if(session&&(session.user.user_metadata?.duevo_language!==getLanguage()||session.user.user_metadata?.duevo_country!==getCountry()))void supabase?.auth.updateUser({data:{duevo_language:getLanguage(),duevo_country:getCountry()}}).catch(()=>{});},[session?.user.id,localePreference]);
+  useEffect(()=>{
+    if(!session)return;
+    const meta=session.user.user_metadata||{};
+    // On a new device, the account's saved preferences win over browser detection.
+    if(!hasChosenLanguage()&&(meta.duevo_language==='ro'||meta.duevo_language==='en')&&meta.duevo_language!==getLanguage()){setLanguage(meta.duevo_language);return;}
+    if(!hasChosenCountry()&&(meta.duevo_country==='RO'||meta.duevo_country==='OTHER')&&meta.duevo_country!==getCountry()){setCountry(meta.duevo_country);return;}
+    if(meta.duevo_language!==getLanguage()||meta.duevo_country!==getCountry())void supabase?.auth.updateUser({data:{duevo_language:getLanguage(),duevo_country:getCountry()}}).catch(()=>{});
+  },[session?.user.id,localePreference]);
 
   useEffect(()=>{if(session)void restorePush().catch(()=>{});},[session?.user.id]);
 

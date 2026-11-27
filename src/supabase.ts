@@ -1,6 +1,6 @@
 import {tr,locale} from './i18n.ts';
 import {createClient} from '@supabase/supabase-js';
-import {dateOnly,normalizeReminders} from './reminder-utils';
+import {dateOnly,normalizeReminders,MAX_REMINDERS} from './reminder-utils';
 const url=import.meta.env.VITE_SUPABASE_URL,key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 export const supabase=url&&key?createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 export async function getAuthSettings():Promise<{external?:{google?:boolean;email?:boolean};mailer_autoconfirm?:boolean}>{if(!url||!key)throw Error(tr("Conectarea nu este disponibilă momentan."));const response=await fetch(url+'/auth/v1/settings',{headers:{apikey:key},cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error(tr("Nu am putut verifica setările contului. Încearcă din nou."));return response.json()}
@@ -29,6 +29,7 @@ function documentValues(form:FormData,multiple:boolean,withIssuedDate=false){
  const leads=normalizeReminders(form.getAll('reminder_days').length?form.getAll('reminder_days'):[Number(form.get('days')||30)]);
  if(!name||name.length>120||!dateOnly(expires)||!['Vehicles','Personal','Home','Health','Other'].includes(category)||notes.length>2000||reference.length>120)throw Error(tr("Verifică numele, categoria și data expirării."));
  if(!multiple&&(leads.length>1||leads[0]===0))throw Error(tr("Alertele multiple necesită actualizarea bazei de date."));
+ if(leads.length>MAX_REMINDERS)throw Error(tr("Poți avea cel mult {0} alerte pentru un act.",MAX_REMINDERS));
  const issued=String(form.get('issued_on')||'');if(issued&&!dateOnly(issued))throw Error(tr("Verifică data emiterii."));
  return {name,category,expires,...(form.has('vehicle_id')?{vehicle_id:category==='Vehicles'?String(form.get('vehicle_id')||'')||null:null}:{}),days:Math.max(1,...leads),notes,reference,...(multiple?{reminder_days:leads}:{}),...(withIssuedDate?{issued_on:form.get('entry_type')==='other'?null:issued||null}:{})};
 }

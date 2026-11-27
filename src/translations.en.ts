@@ -1170,6 +1170,7 @@ export const english:Record<string,string>={
   "{0} restante": "{0} overdue",
   "Restant": "Overdue",
   "Programare / termen": "Appointment / deadline",
+  "Programare": "Appointment",
   "Act de verificat sau reînnoit": "Document to check or renew",
   "Vezi detalii": "View details",
   "Pregătește documentele": "Prepare documents",
@@ -1205,5 +1206,14 @@ export const english:Record<string,string>={
   "Verifică din nou": "Check again",
   "Notificările sunt oprite.": "Notifications are off.",
   "Notificările sunt oprite pe acest dispozitiv.": "Notifications are off on this device.",
-  "Activează-le ca să primești alertele pentru acte.": "Enable them to receive document alerts."
+  "Activează-le ca să primești alertele pentru acte.": "Enable them to receive document alerts.",
+  "Poți avea cel mult {0} alerte pentru un act.": "You can have up to {0} alerts per document.",
+  "Scrie un număr între 1 și {0}.": "Enter a number between 1 and {0}.",
+  "Ai deja această alertă.": "You already have this alert.",
+  "Alt număr de zile": "Custom number of days",
+  "Adaugă": "Add",
+  "Copiat": "Copied",
+  "Copiază": "Copy",
+  "Acasă": "Home",
+  "Elimină": "Remove"
 };

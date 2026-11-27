@@ -1,0 +1,10 @@
+.pocket-app .ep-custom-reminder{display:grid;gap:6px;margin-top:10px}
+.pocket-app .ep-custom-reminder label{font-size:12px;font-weight:700;color:var(--ep-sub)}
+.pocket-app .ep-custom-reminder-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pocket-app .ep-custom-reminder input{width:76px;min-width:0;min-height:40px;padding:8px 10px;border:var(--ep-border-width) solid var(--ep-border);border-radius:10px;background:var(--ep-card);color:var(--ep-text);font:700 16px 'JetBrains Mono',monospace;text-align:center}
+.pocket-app .ep-custom-reminder-row>span{font-size:13px;color:var(--ep-sub)}
+.pocket-app .ep-custom-reminder-add{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:8px 12px;background:transparent;color:var(--ep-text);border:1px dashed var(--ep-border);border-radius:10px;font-size:13px;font-weight:700;box-shadow:none}
+.pocket-app .ep-custom-reminder-add:disabled{opacity:.5;cursor:not-allowed}
+.pocket-app .ep-custom-reminder-error{margin:0;font-size:12px;color:#ff7a45}
+.pocket-app[data-theme=carbon] .ep-custom-reminder-error{color:#b93a0c}
+.pocket-app .ep-custom-reminder-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}

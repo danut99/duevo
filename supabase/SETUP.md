@@ -37,6 +37,16 @@ files are available both in Imagini and in the original act. Profile-scoped
 choices and the existing ownership foreign keys/RLS apply. Unlinked documents
 keep their name/category/vehicle form. No new migration is needed for linking.
 
+## Custom reminder days (27 November 2026)
+
+Apply `migrations/202611270001_custom_reminder_days.sql` before deploying the
+frontend. It is repeatable and keeps existing documents unchanged. Besides the
+30/14/7/1 presets, users can enter any number of days from 1 to 365 (at most 8
+alerts per document), both in Reminders → automatic defaults and in each
+document's editor. The push and email senders already handle any lead time, so
+no Edge Function redeployment is needed. Without the migration, saving a custom
+value fails with a database check error.
+
 ## Term lifecycle and appointment reminders (21 November 2026)
 
 Apply `migrations/202611210007_multiple_notification_hours.sql` if it has not already

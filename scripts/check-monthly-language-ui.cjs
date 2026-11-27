@@ -13,7 +13,7 @@ let docs=[
  {id:'done',name:'Deja rezolvat',expires:today,entry_type:'other',completed_at:new Date().toISOString()}
 ].map(d=>({user_id:uid,profile_id:wallet,category:'Personal',reference:'',notes:'Notiță personală în română',days:7,reminder_days:[7,1],version:1,...d}));
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
- const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:844}});const errors=[];
+ const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:844},locale:'en-GB',timezoneId:'Europe/London'});const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/auth/v1/**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({id:uid,email:'fixture@example.test',aud:'authenticated',role:'authenticated',user_metadata:{duevo_language:'en'}})}));
  await page.route('**/rest/v1/**',async route=>{
@@ -29,12 +29,12 @@ let docs=[
   await route.fulfill({contentType:'application/json',body:JSON.stringify(response)});
  });
  await page.route('**/functions/v1/**',route=>route.fulfill({contentType:'application/json',body:'{"configured":false,"preferences":null,"verified":true}'}));
- // Exercise the real first-visit language dialog and landing/auth screens.
+ // First visit infers language and guide country from the browser instead of blocking on a dialog.
+ const roPage=await browser.newPage({serviceWorkers:'block',locale:'en-US',timezoneId:'Europe/Bucharest'});await roPage.goto(base+'/');
+ await roPage.getByRole('link',{name:'Intră în cont',exact:true}).first().waitFor();assert.equal(await roPage.evaluate(()=>document.documentElement.lang),'ro');assert.equal(await roPage.locator('.du-language-dialog[open]').count(),0);await roPage.close();
  await page.goto(base+'/');
- const dialog=page.getByRole('dialog',{name:/Alege limba/});await dialog.waitFor();
- await page.keyboard.press('Escape');assert(await dialog.isVisible(),'First visit requires an explicit choice');
- await page.getByRole('radio',{name:/English/}).check();await page.getByLabel('Country for renewal guides').selectOption('OTHER');await page.getByRole('button',{name:'Continue in English'}).click();
  await page.getByRole('link',{name:'Sign in',exact:true}).first().waitFor();
+ assert.equal(await page.locator('.du-language-dialog[open]').count(),0,'First visit does not block on a language dialog');
  assert.equal(await page.evaluate(()=>document.documentElement.lang),'en');
  await page.reload();await page.getByRole('link',{name:'Sign in',exact:true}).first().waitFor();assert.equal(await page.locator('.du-language-dialog[open]').count(),0);
  await page.goto(base+'/login');await page.getByRole('heading',{name:'Welcome back.',exact:true}).waitFor();

@@ -1,6 +1,7 @@
 import {tr,locale} from './i18n.ts';
-export const REMINDER_OPTIONS=[90,60,30,14,7,3,1,0];
-export function normalizeReminders(values:unknown,fallback=30):number[]{const result=Array.isArray(values)?[...new Set(values.map(Number).filter(n=>REMINDER_OPTIONS.includes(n)))].sort((a,b)=>b-a):[];return result.length?result:[fallback]}
+export const MAX_REMINDER_DAYS=365,MAX_REMINDERS=8;
+export const validReminder=(value:number)=>Number.isInteger(value)&&value>=0&&value<=MAX_REMINDER_DAYS;
+export function normalizeReminders(values:unknown,fallback=30):number[]{const result=Array.isArray(values)?[...new Set(values.map(Number).filter(validReminder))].sort((a,b)=>b-a):[];return result.length?result:[fallback]}
 export function dateOnly(value:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const parsed=new Date(value+'T12:00:00Z');return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value}
 export function reminderLabel(days:number){return days===0?tr("În ziua expirării"):tr("Cu {0} {1} înainte",days,days===1?tr("zi"):tr("zile"))}
 const escape=(value:string)=>value.replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
